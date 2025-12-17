@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import './browse.css';
 
 type Opportunity = {
@@ -113,8 +114,11 @@ export default function BrowsePage() {
   };
 
   return (
-    <div className="submit-container">
-      <h1>Browse Microproducts</h1>
+    <div className="browse-container">
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem' }}>
+        <h1>Browse Microproducts</h1>
+        <Link href="/" className="home-btn">Home</Link>
+      </div>
       <p className="subtitle">Explore current opportunities and join a team.</p>
 
       {loading && <div>Loading...</div>}

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, ChangeEvent, FormEvent } from 'react';
+import Link from 'next/link';
 import { microproductSchema } from '@/lib/microproduct-schema';
 import './submit.css';
 
@@ -197,7 +198,10 @@ export default function SubmitPage() {
 
   return (
     <div className="submit-container">
-      <h1>Submit a Microproduct</h1>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem' }}>
+        <h1>Submit a Microproduct</h1>
+        <Link href="/" className="home-btn">Home</Link>
+      </div>
       <p className="subtitle">Propose a focused deliverable that can be completed in 2-12 weeks</p>
 
 

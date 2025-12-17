@@ -1,148 +1,309 @@
+/* ============================================
+   SUBMIT PAGE STYLES
+   ============================================ */
+
 .submit-container {
-  /* make the container wider so cards can sit side-by-side without shrinking */
   max-width: 2400px;
   margin: 0 auto;
   padding: 2rem;
 }
 
-h1 {
+.submit-container h1 {
   font-size: var(--fs-xxl);
   margin-bottom: 0.5rem;
 }
 
-.subtitle {
+.submit-container .subtitle {
   color: var(--color-muted);
   margin-bottom: 2rem;
 }
 
-section {
+.submit-container section {
   margin-bottom: 2.5rem;
 }
 
-section h2 {
+.submit-container section h2 {
   font-size: var(--fs-xl);
   margin-bottom: 1.5rem;
   color: var(--color-heading);
 }
 
-.form-group {
+.submit-container .form-group {
   margin-bottom: 1.5rem;
 }
 
-label {
+.submit-container label {
   display: block;
   font-weight: 600;
   margin-bottom: 0.5rem;
   color: var(--color-heading);
 }
 
-
-
-textarea {
+.submit-container textarea {
   resize: vertical;
 }
 
-small {
+.submit-container small {
   display: block;
   margin-top: 0.25rem;
   color: var(--color-muted);
   font-size: var(--fs-sm);
 }
 
-.radio-group {
+.submit-container .radio-group {
   display: flex;
   gap: 1.5rem;
 }
 
-.radio-group label {
+.submit-container .radio-group label {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-weight: normal;
 }
 
+/* ============================================
+   BROWSE PAGE STYLES
+   ============================================ */
 
+.browse-container {
+  max-width: 2400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
 
+.browse-container h1 {
+  font-size: var(--fs-xxl);
+  margin-bottom: 0.5rem;
+}
 
+.browse-container .subtitle {
+  color: var(--color-muted);
+  margin-bottom: 2rem;
+}
 
-.cards {
+.browse-container section {
+  margin-bottom: 2.5rem;
+}
+
+.browse-container section h2 {
+  font-size: var(--fs-xl);
+  margin-bottom: 1.5rem;
+  color: var(--color-heading);
+}
+
+.browse-container .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.browse-container label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--color-heading);
+}
+
+.browse-container textarea {
+  resize: vertical;
+}
+
+.browse-container small {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--color-muted);
+  font-size: var(--fs-sm);
+}
+
+.browse-container .radio-group {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.browse-container .radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: normal;
+}
+
+.browse-container .cards {
   display: grid;
-  /* fixed card width to avoid squishing; center columns in the container */
-  grid-template-columns: repeat(auto-fit, 420px);
-  justify-content: center;
+  grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
   gap: 1.25rem;
   align-items: start;
 }
 
-.card {
+.browse-container .card {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.card-header {
+.browse-container .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
 }
 
-.card .title { margin: 0; font-size: var(--fs-lg); font-weight:700 }
-/* Status color variants */
-.card .status { font-size: var(--fs-sm); color: var(--color-text-muted); text-transform: capitalize; padding:0.25rem 0.5rem; border-radius:6px }
-.status.pending { background: var(--color-pending); color: var(--color-accent); }
-.status.approved { background: var(--color-success); color: var(--color-text); }
-.status.completed { background: var(--color-completed); color: var(--color-chip-bg); }
-.status.in-progress { background: var(--color-warning); color: var(--color-heading); }
-.status.rejected { background: var(--color-error); color: var(--color-danger); }
-.status.unknown { background: var(--color-surface); color: var(--color-text-muted); }
+.browse-container .card .title {
+  margin: 0;
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
 
-.meta { display:flex; gap:0.5rem; flex-wrap:wrap; color:var(--color-muted); font-size:var(--fs-md) }
-.meta .chip { background: var(--color-chip-bg); padding: 0.25rem 0.5rem; border-radius: 999px; box-shadow: 0 1px 0 var(--shadow-very-subtle) }
-.purpose { color: var(--color-text); margin:0.5rem 0; line-height:1.3; max-height:3.6em; overflow:hidden; text-overflow:ellipsis }
-.details { font-size:var(--fs-md); color: var(--color-text) }
-.team-list { margin-top:0.25rem; display:flex; flex-direction:column; gap:0.25rem }
-.member { font-size:var(--fs-sm); color: var(--color-text-muted) }
+.browse-container .card .status {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+  text-transform: capitalize;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+}
 
-.card-actions { display:flex; gap:0.5rem; align-items:center; justify-content:flex-end }
+.browse-container .status.pending {
+  background: var(--color-pending);
+  color: var(--color-accent);
+}
 
-/* Card sections to emulate a small markdown report */
-.card-section { padding-top: 0.25rem; padding-bottom: 0.25rem; border-top: 1px dashed var(--stroke-subtle) }
-.card-section:first-of-type { border-top: none; padding-top: 0 }
-.card-section h4 { margin: 0 0 0.35rem 0; font-size: var(--fs-md); color: var(--color-text); display:block; font-weight:700 }
-.md-heading::before { content: ''; }
-.section-body { color:var(--color-text); font-size:var(--fs-md) }
-.section-body.small { color:var(--color-text-muted); font-size:var(--fs-sm) }
-.section-body pre { white-space: pre-wrap }
+.browse-container .status.approved {
+  background: var(--color-success);
+  color: var(--color-text);
+}
 
+.browse-container .status.completed {
+  background: var(--color-completed);
+  color: var(--color-chip-bg);
+}
 
+.browse-container .status.in-progress {
+  background: var(--color-warning);
+  color: var(--color-heading);
+}
 
-/* Two-column internal layout for card details */
-.card-grid {
+.browse-container .status.rejected {
+  background: var(--color-error);
+  color: var(--color-danger);
+}
+
+.browse-container .status.unknown {
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+}
+
+.browse-container .meta {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  color: var(--color-muted);
+  font-size: var(--fs-md);
+}
+
+.browse-container .meta .chip {
+  background: var(--color-chip-bg);
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  box-shadow: 0 1px 0 var(--shadow-very-subtle);
+}
+
+.browse-container .purpose {
+  color: var(--color-text);
+  margin: 0.5rem 0;
+  line-height: 1.3;
+  max-height: 3.6em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.browse-container .details {
+  font-size: var(--fs-md);
+  color: var(--color-text);
+}
+
+.browse-container .team-list {
+  margin-top: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.browse-container .member {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+
+.browse-container .card-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.browse-container .card-section {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  border-top: 1px dashed var(--stroke-subtle);
+}
+
+.browse-container .card-section:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.browse-container .card-section h4 {
+  margin: 0 0 0.35rem 0;
+  font-size: var(--fs-md);
+  color: var(--color-text);
+  display: block;
+  font-weight: 700;
+}
+
+.browse-container .section-body {
+  color: var(--color-text);
+  font-size: var(--fs-md);
+}
+
+.browse-container .section-body.small {
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+}
+
+.browse-container .section-body pre {
+  white-space: pre-wrap;
+}
+
+.browse-container .card-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
 
-/* allow specific sections to span the full width of the card (e.g., Dependencies) */
-.card-grid .full-width {
+.browse-container .card-grid .full-width {
   grid-column: 1 / -1;
 }
 
-/* Remove top borders on sections inside the grid for a cleaner two-column card */
-.card-grid .card-section { border-top: none; padding-top: 0 }
-
-@media (max-width: 720px) {
-  .card-grid { grid-template-columns: 1fr }
+.browse-container .card-grid .card-section {
+  border-top: none;
+  padding-top: 0;
 }
 
-.view-link { margin-left:auto; color:var(--color-accent); text-decoration:underline; cursor:pointer }
+@media (max-width: 720px) {
+  .browse-container .card-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
-/* Join form inputs inside card */
-.card-section.join-form { display:flex; flex-direction:column; gap:0.5rem; padding:0.5rem 0 }
+.browse-container .home-btn {
+  margin-left: auto;
+}
 
-/* Make the submit/cancel buttons in the inline join form auto-width */
-.card-section.join-form .join-btn,
-.card-section.join-form .submit-btn {
+.browse-container .card-section.join-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+}
+
+.browse-container .card-section.join-form .join-btn,
+.browse-container .card-section.join-form .submit-btn {
   width: auto;
 }

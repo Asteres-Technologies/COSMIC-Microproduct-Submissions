@@ -19,7 +19,8 @@ button,
 .secondary-cta,
 .tertiary-cta,
 .submit-btn,
-.btn-outline {
+.btn-outline,
+.home-btn {
   background: var(--neu-surface);
   border-radius: var(--neu-radius-sm);
   padding: 0.625rem 1.25rem;
