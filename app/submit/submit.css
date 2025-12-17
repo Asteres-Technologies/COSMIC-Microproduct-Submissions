@@ -5,26 +5,23 @@
 }
 
 h1 {
-  font-size: 2rem;
+  font-size: var(--fs-xxl);
   margin-bottom: 0.5rem;
 }
 
 .subtitle {
-  color: #666;
+  color: var(--color-muted);
   margin-bottom: 2rem;
 }
 
 section {
   margin-bottom: 2.5rem;
-  padding: 1.5rem;
-  background: #f9f9f9;
-  border-radius: 8px;
 }
 
 section h2 {
-  font-size: 1.25rem;
+  font-size: var(--fs-xl);
   margin-bottom: 1.5rem;
-  color: #333;
+  color: var(--color-heading);
 }
 
 .form-group {
@@ -35,21 +32,10 @@ label {
   display: block;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: #333;
+  color: var(--color-heading);
 }
 
-input[type="text"],
-input[type="email"],
-input[type="number"],
-textarea,
-select {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-family: inherit;
-}
+
 
 textarea {
   resize: vertical;
@@ -58,20 +44,11 @@ textarea {
 small {
   display: block;
   margin-top: 0.25rem;
-  color: #666;
-  font-size: 0.875rem;
+  color: var(--color-muted);
+  font-size: var(--fs-sm);
 }
 
-.field-error {
-  color: #b91c1c;
-  margin-top: 0.25rem;
-  font-size: 0.9rem;
-}
 
-.input-error {
-  border-color: #b91c1c !important;
-  box-shadow: 0 0 0 3px rgba(185,28,28,0.06);
-}
 
 .radio-group {
   display: flex;
@@ -86,46 +63,10 @@ small {
 }
 
 .submit-btn {
-  background: #0070f3;
-  color: white;
-  padding: 1rem 2rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
   width: 100%;
-}
-
-.submit-btn:hover {
-  background: #0051cc;
-}
-
-.submit-btn:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-}
-
-.alert {
-  padding: 1rem;
-
-  border-radius: 4px;
-  margin-bottom: 2rem;
 }
 
 /* small gap between submit button and the result alert */
 .submit-container form .submit-btn + .alert {
   margin-top: 0.75rem;
-}
-
-.alert.success {
-  background: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-}
-
-.alert.error {
-  background: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
 }

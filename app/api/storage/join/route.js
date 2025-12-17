@@ -1,5 +1,6 @@
 import { Octokit } from '@octokit/rest';
 import yaml from 'js-yaml';
+import { joinSchema } from '@/lib/microproduct-schema';
 
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
@@ -10,10 +11,40 @@ const REPO_CONFIG = {
 
 export async function POST(request) {
   try {
-    const { filename, name, email } = await request.json();
-    if (!filename || !name) {
-      return Response.json({ success: false, error: 'filename and name are required' }, { status: 400 });
+    const body = await request.json();
+    const validation = joinSchema.safeParse(body);
+    if (!validation.success) {
+      // Log raw validation error for debugging to see exact shape
+      console.error('Join validation failed (raw):', validation.error);
+      // Try common Zod error properties, or find the first array property on the error
+      let rawErrors = [];
+      if (validation.error) {
+        if (Array.isArray(validation.error.issues)) rawErrors = validation.error.issues;
+        else if (Array.isArray(validation.error.errors)) rawErrors = validation.error.errors;
+        else {
+          const vals = Object.keys(validation.error).map(k => validation.error[k]);
+          const found = vals.find(v => Array.isArray(v));
+          if (Array.isArray(found)) rawErrors = found;
+        }
+      }
+      const issues = rawErrors.map((issue) => ({ path: issue.path, message: issue.message }));
+      let message;
+      if (issues.length) {
+        message = issues.map(i => (Array.isArray(i.path) && i.path.length ? `${i.path.join('.')}: ${i.message}` : i.message)).join('; ');
+      } else if (validation.error && validation.error.message) {
+        message = validation.error.message;
+      } else {
+        try {
+          message = JSON.stringify(validation.error);
+        } catch (e) {
+          message = 'Invalid join request';
+        }
+      }
+      console.error('Join validation message to return:', message);
+      console.error('Join validation extracted issues:', issues);
+      return Response.json({ success: false, error: message }, { status: 400 });
     }
+    const { filename, name, email } = validation.data;
 
     const path = `submissions/${filename}`;
     // fetch current file
@@ -63,7 +94,6 @@ export async function POST(request) {
     return Response.json({ success: true, message: 'Joined' });
   } catch (error) {
     console.error('Join error', error);
-    const message = error instanceof Error ? error.message : String(error);
-    return Response.json({ success: false, error: message }, { status: 500 });
+    return Response.json({ success: false, error: 'Failed to join' }, { status: 500 });
   }
 }

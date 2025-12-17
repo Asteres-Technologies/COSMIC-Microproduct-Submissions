@@ -482,8 +482,8 @@ export default function SubmitPage() {
           </div>
         </section>
 
-        <button type="submit" disabled={submitting} className="submit-btn">
-          {submitting ? 'Submitting...' : 'Submit Microproduct'}
+        <button type="submit" disabled={submitting} className="submit-btn primary-cta">
+          <span className="btn-label">{submitting ? 'Submitting...' : 'Submit Microproduct'}</span>
         </button>
         {result && (
           <div className={`alert ${result.success ? 'success' : 'error'}`}>

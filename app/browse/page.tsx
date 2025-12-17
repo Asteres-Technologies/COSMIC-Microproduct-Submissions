@@ -70,7 +70,24 @@ export default function BrowsePage() {
         setJoined(prev => ({ ...prev, [filename]: true }));
         cancelJoin(filename);
       } else {
-          const msg = data && data.error ? data.error : 'Failed to join';
+          let msg = 'Failed to join';
+          if (data) {
+            if (typeof data.error === 'string') {
+              msg = data.error;
+            } else if (Array.isArray(data.error)) {
+              msg = data.error.map((e: any) => {
+                if (e && e.path) {
+                  const path = Array.isArray(e.path) ? e.path.join('.') : String(e.path);
+                  return `${path}: ${e.message || JSON.stringify(e)}`;
+                }
+                return e && e.message ? e.message : String(e);
+              }).join('; ');
+            } else if (data.error && data.error.message) {
+              msg = data.error.message;
+            } else if (data.error) {
+              msg = String(data.error);
+            }
+          }
           setJoinForms(prev => ({ ...prev, [filename]: { ...form, submitting: false, error: msg } }));
       }
     } catch (err) {
@@ -155,7 +172,7 @@ export default function BrowsePage() {
                 </div>
 
                 {p.dependencies && (
-                  <div className="card-section">
+                  <div className="card-section full-width">
                     <h4 className="md-heading">Dependencies</h4>
                     <div className="section-body">{p.dependencies}</div>
                   </div>
@@ -179,9 +196,9 @@ export default function BrowsePage() {
                   />
                   <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
                     <button className="join-btn" onClick={() => submitJoin(opp.name)} disabled={!!joinForms[opp.name].submitting}>
-                      {joinForms[opp.name].submitting ? 'Joining...' : 'Submit'}
+                      <span className="btn-label">{joinForms[opp.name].submitting ? 'Joining...' : 'Submit'}</span>
                     </button>
-                    <button className="submit-btn" onClick={() => cancelJoin(opp.name)}>Cancel</button>
+                    <button className="submit-btn" onClick={() => cancelJoin(opp.name)}><span className="btn-label">Cancel</span></button>
                   </div>
                   {joinForms[opp.name].error && <div className="alert error" style={{ marginTop: '0.5rem' }}>{joinForms[opp.name].error}</div>}
                 </div>
@@ -190,10 +207,10 @@ export default function BrowsePage() {
               <div className="card-actions">
                 <div />
                 {!joined[opp.name] && !joinForms[opp.name] && (
-                  <button className="join-btn" onClick={() => startJoin(opp.name)}>Join</button>
+                  <button className="join-btn" onClick={() => startJoin(opp.name)}><span className="btn-label">Join</span></button>
                 )}
                 {joined[opp.name] && (
-                  <button className="join-btn" disabled>Joined</button>
+                  <button className="join-btn" disabled><span className="btn-label">Joined</span></button>
                 )}
               </div>
             </div>

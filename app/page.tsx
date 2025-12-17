@@ -1,65 +1,141 @@
-import Image from "next/image";
+"use client"
+
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import './page.css';
+
+type Opportunity = {
+  name: string;
+  path: string;
+  parsed?: any;
+};
 
 export default function Home() {
+  const [opps, setOpps] = useState<Opportunity[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      try {
+        const res = await fetch('/api/storage');
+        const data = await res.json().catch(() => null);
+        if (!mounted) return;
+        if (data && Array.isArray(data.files)) setOpps(data.files as Opportunity[]);
+        else setOpps([]);
+      } catch (err) {
+        setOpps([]);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+    load();
+    return () => { mounted = false };
+  }, []);
+
+  const stats = {
+    total: opps.length,
+    pending: opps.filter(o => (o.name?.split('__')?.[0] ?? '').toLowerCase() === 'pending').length,
+    approved: opps.filter(o => (o.name?.split('__')?.[0] ?? '').toLowerCase() === 'approved').length,
+    'in-progress': opps.filter(o => (o.name?.split('__')?.[0] ?? '').toLowerCase() === 'in-progress').length,
+    completed: opps.filter(o => (o.name?.split('__')?.[0] ?? '').toLowerCase() === 'completed').length,
+  };
+
+  const parseDateFromName = (name?: string) => {
+    if (!name) return undefined;
+    const m = name.match(/(\d{4}-\d{2}-\d{2})/);
+    return m ? new Date(m[1]) : undefined;
+  };
+
+  const recent = opps
+    .filter(o => {
+      const status = (o.name?.split('__')?.[0] ?? '').toLowerCase();
+      return ['approved','in-progress','completed'].includes(status);
+    })
+    .map(o => ({
+      ...o,
+      status: (o.name?.split('__')?.[0] ?? '').toLowerCase(),
+      date: parseDateFromName(o.name) || new Date(0)
+    }))
+    .sort((a,b) => b.date.getTime() - a.date.getTime())
+    .slice(0,5);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="landing-container">
+      <header className="hero">
+        <div className="hero-inner">
+          <h1 className="hero-title">COSMIC Microproducts Portal</h1>
+          <p className="hero-sub">A lightweight approach to delivering focused, time-boxed products for the space community</p>
+          <p className="hero-desc">
+            This portal helps COSMIC members propose, track, and showcase small, time‑boxed projects. Design a clearly scoped microproduct (2–12 weeks), assemble a small team or go solo, then use the submission form to propose your idea and the Browse page to find, follow, or join existing microproducts.
           </p>
+          <section className="what">
+            <h2>What is a Microproduct?</h2>
+            <ul>
+              <li>A microproduct is a focused deliverable with a clearly defined scope.</li>
+              <li>Microproducts typically run for two to twelve weeks.</li>
+              <li>Each microproduct is owned and led by an individual or a small team.</li>
+              <li>Microproducts can start without broad consensus.</li>
+              <li>They are lightweight efforts for rapid insights.</li>
+              <li>Work is broken into small, low-commitment tasks that volunteers can pick up.</li>
+              <li>Every microproduct has a clear leader responsible for delivery and coordination.</li>
+            </ul>
+          </section>
+
+          <div className="hero-cta">
+            <Link href="/submit" className="primary-cta"><span className="btn-label">Submit a Microproduct</span></Link>
+            <Link href="/browse" className="secondary-cta">Browse All Microproducts</Link>
+            <a className="tertiary-cta" href="https://cosmicspace.org/news/" target="_blank" rel="noreferrer">News</a>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+        <aside className="hero-stats">
+          <div className="stat">
+            <div className="stat-num">{loading ? '—' : stats.total}</div>
+            <div className="stat-label">Total submissions</div>
+          </div>
+          <div className="stat">
+            <div className="stat-num">{loading ? '—' : stats.pending}</div>
+            <div className="stat-label">Pending review</div>
+          </div>
+          <div className="stat">
+            <div className="stat-num">{loading ? '—' : stats.approved}</div>
+            <div className="stat-label">Approved</div>
+          </div>
+          <div className="stat">
+            <div className="stat-num">{loading ? '—' : stats['in-progress']}</div>
+            <div className="stat-label">In progress</div>
+          </div>
+          <div className="stat">
+            <div className="stat-num">{loading ? '—' : stats.completed}</div>
+            <div className="stat-label">Completed</div>
+          </div>
+        </aside>
+      </header>
+
+      
+
+      <section className="recent">
+        <h2>Recent Activity</h2>
+        {recent.length === 0 && <div>No recent activity.</div>}
+        <ul className="recent-list">
+          {recent.map(r => (
+            <li key={r.path} className="recent-item neu-inset">
+              <div className="recent-left">
+                <div className={`badge ${r.status.replace(/[^a-z0-9-]/g,'')}`}>{r.status}</div>
+                <div className="recent-title">{r.parsed?.title ?? r.name}</div>
+              </div>
+              <div className="recent-meta">
+                <div>{r.parsed?.lead_name ?? '—'}</div>
+                <div className="muted">{r.parsed?.focus_area ?? '—'}</div>
+                <div className="muted">{r.date instanceof Date && r.date.getTime() ? r.date.toISOString().slice(0,10) : '—'}</div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      
     </div>
   );
 }
+

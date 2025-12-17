@@ -1,0 +1,43 @@
+.landing-container{max-width:1100px;margin:0 auto;padding:2rem;font-family:'Montserrat', sans-serif}
+.hero{display:flex;gap:2rem;align-items:flex-start;justify-content:space-between}
+.hero-inner{flex:1}
+.hero-title{font-size:var(--fs-xxl);margin:0 0 .25rem}
+.hero-sub{color:var(--color-muted);margin:0 0 .75rem}
+.hero-desc{
+  color:var(--neu-text);
+  line-height:1.4;
+  margin:0 0 .5rem;
+}
+.hero-desc.small{
+  color:var(--color-muted);
+  font-size:var(--fs-md);
+  margin-top:0.5rem;
+}
+.hero-cta{display:flex;gap:0.75rem;margin-top:1rem}
+.hero-stats{width:240px;display:flex;flex-direction:column;gap:0.5rem}
+.stat{text-align:center}
+.stat-num{font-weight:700;font-size:var(--fs-lg)}
+.stat-label{font-size:var(--fs-sm);color:var(--color-muted)}
+.what, .recent{margin-top:1.5rem}
+.what h2,.recent h2{margin:0 0 .5rem}
+.what ul{margin:0;padding-left:1.1rem}
+.recent-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0.5rem}
+.recent-item{display:flex;justify-content:space-between;align-items:center;padding:0.85rem 1rem;margin-bottom:0.6rem;border-radius:var(--neu-radius-sm);}
+.recent-left{display:flex;align-items:center;gap:0.75rem}
+.badge{padding:0.25rem .5rem;border-radius:8px;font-size:var(--fs-sm);text-transform:capitalize;box-shadow: 2px 2px 4px var(--neu-shadow-dark), -1px -1px 3px var(--neu-shadow-light);}
+.badge.pending{background:var(--color-pending);color:var(--color-accent)}
+.badge.approved{background:var(--color-success);color:var(--color-text)}
+.badge.in-progress{background:var(--color-warning);color:var(--color-heading)}
+.badge.completed{background:var(--color-completed);color:var(--color-chip-bg)}
+.recent-title{font-weight:600}
+.recent-meta{display:flex;gap:1rem;align-items:center}
+.muted{color:var(--color-muted);font-size:var(--fs-md)}
+.landing-cta{margin-top:1.5rem;display:flex;gap:1rem;align-items:center}
+.link{color:var(--color-accent);text-decoration:underline}
+
+@media(max-width:800px){
+  .hero{flex-direction:column}
+  .hero-stats{width:100%;flex-direction:row;gap:0.5rem;flex-wrap:wrap}
+  .stat{flex:1}
+  .recent-meta{display:flex;flex-direction:column;align-items:flex-end}
+}

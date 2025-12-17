@@ -1,8 +1,124 @@
+
 @import "tailwindcss";
 
+/* Inset (inward) neumorphic surface */
+.neu-inset {
+  /* match parent background by being transparent so the parent surface shows through */
+  background: transparent;
+  /* inset: darker shadow on bottom-right, lighter highlight on top-left */
+  box-shadow:
+    inset 9px 9px 18px var(--neu-shadow-dark),
+    inset -9px -9px 18px var(--neu-shadow-light);
+  border-radius: inherit;
+  transition: all var(--neu-transition);
+}
+
+button,
+.primary-cta,
+.join-btn,
+.secondary-cta,
+.tertiary-cta,
+.submit-btn,
+.btn-outline {
+  background: var(--neu-surface);
+  border-radius: var(--neu-radius-sm);
+  padding: 0.625rem 1.25rem;
+  font-weight: 600;
+  font-size: var(--fs-md);
+  cursor: pointer;
+  box-shadow: 
+    5px 5px 10px var(--neu-shadow-dark),
+    -5px -5px 10px var(--neu-shadow-light),
+    inset 1px 1px 1px var(--neu-highlight);
+  transition: all var(--neu-transition);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  line-height: 1.2;
+  color: var(--neu-text);
+}
+.btn-inset:hover:not(:disabled) {
+  box-shadow:
+    inset 7px 7px 14px var(--neu-shadow-dark),
+    inset -7px -7px 14px var(--neu-shadow-light),
+      1px 1px 2px var(--shadow-normal);
+}
+.btn-inset:active:not(:disabled) {
+  box-shadow:
+    inset 9px 9px 18px var(--neu-shadow-dark),
+    inset -9px -9px 18px var(--neu-shadow-light),
+      1px 1px 2px var(--shadow-normal-strong);
+  }
+
+/* Modern soft neumorphic design system */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* primary color tokens are the consolidated palette below; map neu-* aliases to them */
+  --neu-bg: var(--color-bg);
+  --neu-surface: var(--color-surface);
+  --neu-text: var(--color-text);
+  --neu-text-muted: var(--color-text-muted);
+  --neu-accent: var(--color-accent);
+  --neu-accent-hover: var(--color-accent-hover);
+  /* Consolidated semantic palette (<=15 color variables) */
+  --color-bg: #efeff4;
+  --color-surface: #efeff4;
+  --color-text: #1d1d1f;
+  --color-text-muted: #86868b;
+  --color-accent: #007aff;
+  --color-accent-hover: #0051d5;
+  --color-success: #e6ffef; /* approved / success */
+  --color-error: #f8d7da; /* error / rejected */
+  --color-warning: #fff7ed; /* in-progress */
+  --color-pending: #e6f0ff; /* pending */
+  --color-completed: #111827; /* dark completed */
+  --color-chip-bg: #ffffff;
+  --color-muted: #666666;
+  --color-heading: #333333;
+  --color-danger: #dc2626;
+  /* border and highlight tones to avoid hard white strokes; default to transparent to remove stroked edges */
+  --neu-border: transparent;
+  --neu-highlight: rgba(255, 255, 255, 0.45);
+  /* Additional highlight token (kept as variable for clarity) */
+  --highlight-surface: rgba(255, 255, 255, 0.45);
+  
+  /* Soft neumorphic shadows - very subtle */
+    --neu-shadow-dark: var(--shadow-normal);
+    --neu-shadow-light: var(--highlight-surface);
+
+    /* Simplified shadow palette: two main effects (normal elements vs buttons),
+       plus inset and focus. These are separate from the 15 color variables. */
+    --shadow-normal: rgba(0,0,0,0.06);       /* cards, panels, minor elevation */
+    --shadow-normal-strong: rgba(0,0,0,0.08);/* hover/pressed stronger elevation */
+    --shadow-button: rgba(0,0,0,0.12);       /* buttons get slightly stronger shadow */
+    --shadow-inset: rgba(174,174,192,0.25);  /* for inset effects on inputs and pressed */
+    --shadow-very-subtle: rgba(0,0,0,0.02);   /* tiny 1px shadow for chips/lines */
+    --shadow-focus-ring: rgba(0,122,255,0.08);
+    --shadow-error: rgba(185,28,28,0.3);
+    /* Input background tokens (keep as variables) */
+    --bg-input: rgba(255,255,255,0.6);
+    --bg-input-focus: rgba(255,255,255,0.8);
+    /* subtle stroke token */
+    --stroke-subtle: rgba(17,24,39,0.04);
+  
+  /* Border radius */
+  --neu-radius: 20px;
+  --neu-radius-sm: 12px;
+  --neu-radius-lg: 28px;
+  
+  /* Transitions */
+  --neu-transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  --background: #efeff4;
+  --foreground: #1d1d1f;
+
+  /* Font-size scale (5 tokens) */
+  --fs-xxl: 2rem;       /* Hero, major headings */
+  --fs-xl: 1.25rem;     /* Section headings, large labels */
+  --fs-lg: 1.15rem;     /* Card titles, prominent labels */
+  --fs-md: 0.9375rem;   /* Body / default */
+  --fs-sm: 0.875rem;    /* Small / helper text */
 }
 
 @theme inline {
@@ -14,13 +130,317 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --neu-bg: var(--color-bg);
+    --neu-surface: var(--color-surface);
+    --neu-text: var(--color-text);
+    --neu-text-muted: var(--color-text-muted);
+    --neu-accent: var(--color-accent);
+    --neu-accent-hover: var(--color-accent-hover);
+    
+    --neu-shadow-dark: var(--shadow-normal);
+    --neu-shadow-light: var(--highlight-surface);
+    --neu-border: transparent;
+    --neu-highlight: rgba(0, 0, 0, 0.18);
+      /* Map neu shadow aliases to the shadow token list for consistency */
+      --shadow-umbral: rgba(0, 0, 0, 0.5);
+      --shadow-penumbra: rgba(0, 0, 0, 0.6);
+      --shadow-highlight: rgba(255,255,255,0.02);
+      --shadow-inset-dark: rgba(0,0,0,0.6);
+      --shadow-inset-light: rgba(255,255,255,0.02);
+      --shadow-focus-ring: rgba(0,0,0,0.06);
+      --shadow-very-subtle: rgba(0,0,0,0.02);
+    /* Dark theme reuses consolidated palette where appropriate */
+    --color-bg: #1c1c1e;
+    --color-surface: #1c1c1e;
+    --color-text: #f5f5f7;
+    --color-text-muted: #98989d;
+    --color-accent: #0a84ff;
+    --color-accent-hover: #409cff;
+    --color-success: #0f2f1f;
+    --color-error: #3b1214;
+    --color-warning: #3b2a18;
+    --color-pending: #0f2338;
+    --color-completed: #f5f5f7;
+    --color-chip-bg: #222222;
+    --color-muted: #98989d;
+    --color-heading: #f5f5f7;
+    --color-danger: #ff6b6b;
+    
+    --background: #1c1c1e;
+    --foreground: #f5f5f7;
   }
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--neu-bg);
+  color: var(--neu-text);
+  font-family: sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+/* Ensure no background-image gradients are applied site-wide */
+html, body {
+  background-image: none !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Soft neumorphic raised surface - barely visible, modern */
+.neu-raised,
+section:not(.hero),
+.card,
+.stat,
+.hero-desc {
+  background: var(--neu-surface);
+  /* tightened shadows for quicker falloff so surfaces appear to morph into parent */
+  box-shadow: 
+    6px 6px 12px var(--neu-shadow-dark),
+    -6px -6px 12px var(--neu-shadow-light),
+    inset 1px 1px 2px var(--neu-highlight);
+  transition: all var(--neu-transition);
+  border-radius: var(--neu-radius);
+  padding: 1.25rem;
+  color: var(--neu-text);
+}
+
+/* Inputs - flat with subtle depth */
+input[type="text"],
+input[type="email"],
+input[type="number"],
+textarea,
+select {
+  background: var(--bg-input);
+  box-shadow: 
+    inset 2px 2px 4px var(--shadow-inset),
+    inset -1px -1px 2px var(--neu-highlight);
+  transition: all var(--neu-transition);
+}
+
+/* Neumorphic pressed/inset surface for inputs on focus (with focus ring) */
+input:focus,
+textarea:focus,
+select:focus {
+  background: var(--bg-input-focus);
+  box-shadow: 
+    inset 3px 3px 6px var(--shadow-inset),
+    inset -2px -2px 4px var(--neu-highlight),
+    0 0 0 3px var(--shadow-focus-ring);
+}
+
+/* Non-focused inset surface utility (no focus ring) */
+.neu-inset {
+  /* keep transparent inset with strong directional highlights */
+  background: transparent;
+  box-shadow:
+    inset 9px 9px 18px var(--neu-shadow-dark),
+    inset -9px -9px 18px var(--neu-shadow-light);
+  border-radius: inherit;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="email"],
+input[type="number"],
+textarea,
+select {
+  padding: 0.75rem 1rem;
+  border-radius: var(--neu-radius-sm);
+  color: var(--neu-text);
+  font-size: var(--fs-md);
+  outline: none;
+  width: 100%;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--neu-text-muted);
+  opacity: 0.6;
+}
+
+/* Buttons - soft 3D effect */
+button,
+.secondary-cta,
+.tertiary-cta,
+.submit-btn,
+.btn-outline {
+  background: var(--neu-surface);
+  border-radius: var(--neu-radius-sm);
+  padding: 0.625rem 1.25rem;
+  font-weight: 600;
+  font-size: var(--fs-md);
+  cursor: pointer;
+  /* base button shadows — tighter and subtler */
+  box-shadow: 
+    4px 4px 8px var(--neu-shadow-dark),
+    -4px -4px 8px var(--neu-shadow-light),
+    inset 1px 1px 1px var(--neu-highlight);
+  transition: all var(--neu-transition);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  line-height: 1.2;
+  color: var(--neu-text);
+}
+
+button:hover:not(:disabled),
+.secondary-cta:hover,
+.tertiary-cta:hover,
+.submit-btn:hover:not(:disabled),
+.btn-outline:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    6px 6px 12px var(--neu-shadow-dark),
+    -6px -6px 12px var(--neu-shadow-light),
+    inset 1px 1px 2px var(--neu-highlight);
+}
+
+button:active:not(:disabled),
+.secondary-cta:active,
+.tertiary-cta:active,
+.submit-btn:active:not(:disabled),
+.btn-outline:active {
+  transform: translateY(0);
+  box-shadow: 
+    inset 4px 4px 8px var(--shadow-inset),
+    inset -3px -3px 6px var(--neu-highlight);
+}
+
+button:disabled,
+.submit-btn:disabled,
+.join-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Neutral focus ring for buttons to avoid blue-glow effect */
+button:focus-visible,
+.primary-cta:focus-visible,
+.join-btn:focus-visible,
+.submit-btn:focus-visible {
+  outline: none;
+  box-shadow:
+    9px 9px 18px var(--neu-shadow-dark),
+    -9px -9px 18px var(--neu-shadow-light),
+    0 0 0 4px var(--shadow-umbral);
+}
+
+/* Primary accent buttons - glossy iOS style */
+.primary-cta,
+.join-btn {
+  /* outer neumorphic shell */
+  background: var(--neu-surface);
+  color: var(--background);
+  box-shadow:
+    6px 6px 12px var(--neu-shadow-dark),
+    -6px -6px 12px var(--neu-shadow-light),
+    inset 1px 1px 2px var(--neu-highlight);
+  position: relative;
+  overflow: visible;
+}
+
+/* inner flat accent layer that does NOT tint the shell shadows */
+.primary-cta::before,
+.join-btn::before {
+  content: '';
+  position: absolute;
+  inset: 2px; /* leave a small rim so the shell shows */
+  border-radius: calc(var(--neu-radius-sm) - 2px);
+  background: var(--color-accent);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.primary-cta,
+.join-btn,
+.submit-btn,
+.btn-outline,
+button {
+  z-index: 1; /* ensure button content sits above pseudo-element */
+}
+
+.btn-label {
+  position: relative;
+  z-index: 2;
+}
+
+.primary-cta:hover,
+.join-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow:
+    11px 11px 20px var(--neu-shadow-dark),
+    -11px -11px 20px var(--neu-shadow-light),
+    inset 1px 1px 2px var(--neu-highlight);
+}
+
+.primary-cta:hover::before,
+.join-btn:hover::before {
+  background: var(--color-accent-hover);
+}
+
+.primary-cta:active,
+.join-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow:
+    inset 4px 4px 8px var(--neu-shadow-dark),
+    inset -3px -3px 6px var(--neu-shadow-light);
+}
+
+.primary-cta:active::before,
+.join-btn:active::before {
+  background: var(--color-accent-hover);
+}
+
+/* Sections get slightly more padding */
+section {
+  padding: 1.5rem;
+}
+
+/* Alerts */
+.alert {
+  border-radius: var(--neu-radius-sm);
+  padding: 1rem;
+  box-shadow: 
+    inset 3px 3px 6px var(--neu-shadow-dark),
+    inset -3px -3px 6px var(--neu-shadow-light);
+}
+
+.alert.success {
+  background: var(--color-success);
+  color: var(--color-text);
+}
+
+.alert.error {
+  background: var(--color-error);
+  color: var(--color-danger);
+}
+
+/* Status badges - flat with subtle shadow */
+.status {
+  box-shadow: 
+    2px 2px 4px var(--neu-shadow-dark),
+    -1px -1px 3px var(--neu-shadow-light);
+  border-radius: 8px;
+}
+
+
+
+/* Input error states */
+.input-error {
+  box-shadow: 
+    inset 4px 4px 8px var(--error-inset-weak),
+    inset -4px -4px 8px var(--neu-shadow-light),
+    0 0 0 2px var(--error-inset-strong) !important;
+}
+
+.field-error {
+  color: var(--color-danger);
+  font-size: var(--fs-sm);
+  margin-top: 0.25rem;
 }
