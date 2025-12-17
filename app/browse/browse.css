@@ -1,0 +1,206 @@
+.submit-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+section {
+  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+section h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="number"],
+textarea,
+select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+textarea {
+  resize: vertical;
+}
+
+small {
+  display: block;
+  margin-top: 0.25rem;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.radio-group {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: normal;
+}
+
+.submit-btn {
+  background: #0070f3;
+  color: white;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+
+.submit-btn:hover {
+  background: #0051cc;
+}
+
+.submit-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.alert {
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 2rem;
+}
+
+.alert.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.alert.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 1.25rem;
+}
+
+.card {
+  background: #f3f4f6;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.card .title { margin: 0; font-size: 1.15rem; font-weight:700 }
+.card .status { font-size: 0.75rem; color: #374151; text-transform: capitalize; padding:0.25rem 0.5rem; border-radius:6px }
+
+/* Status color variants */
+.status.pending { background: #e6f0ff; color: #0b5cff; }
+.status.approved { background: #e6ffef; color: #057a4d; }
+.status.completed { background: #111827; color: #ffffff; }
+.status.in-progress { background: #fff7ed; color: #b45309; }
+.status.rejected { background: #fff1f2; color: #b91c1c; }
+.status.unknown { background: #f3f4f6; color: #374151; }
+
+.meta { display:flex; gap:0.5rem; flex-wrap:wrap; color:#4b5563; font-size:0.9rem }
+.meta .chip { background: #ffffff; padding: 0.25rem 0.5rem; border-radius: 999px; border:1px solid #e6e6e6; box-shadow: 0 1px 0 rgba(0,0,0,0.02) }
+.purpose { color:#111827; margin:0.5rem 0; line-height:1.3; max-height:3.6em; overflow:hidden; text-overflow:ellipsis }
+.details { font-size:0.9rem; color:#111827 }
+.team-list { margin-top:0.25rem; display:flex; flex-direction:column; gap:0.25rem }
+.member { font-size:0.85rem; color:#374151 }
+
+.card-actions { display:flex; gap:0.5rem; align-items:center; justify-content:flex-end }
+.join-btn { background:#0b5cff; color:#fff; border:none; padding:0.5rem 0.9rem; border-radius:8px; cursor:pointer; box-shadow: 0 2px 6px rgba(11,92,255,0.12) }
+.join-btn:hover:not(:disabled) { transform: translateY(-1px) }
+
+/* Card sections to emulate a small markdown report */
+.card-section { padding-top: 0.25rem; padding-bottom: 0.25rem; border-top: 1px dashed rgba(17,24,39,0.04) }
+.card-section:first-of-type { border-top: none; padding-top: 0 }
+.card-section h4 { margin: 0 0 0.35rem 0; font-size: 1rem; color: #0f172a; display:block; font-weight:700 }
+.md-heading::before { content: ''; }
+.section-body { color:#111827; font-size:0.95rem }
+.section-body.small { color:#374151; font-size:0.875rem }
+.section-body pre { white-space: pre-wrap }
+
+.card { background: linear-gradient(180deg, #f7f8fa 0%, #f3f4f6 100%); }
+
+/* Two-column internal layout for card details */
+.card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Remove top borders on sections inside the grid for a cleaner two-column card */
+.card-grid .card-section { border-top: none; padding-top: 0 }
+
+@media (max-width: 720px) {
+  .card-grid { grid-template-columns: 1fr }
+}
+.join-btn:disabled { background:#9aa4b2; cursor:not-allowed }
+.view-link { margin-left:auto; color:#0b5cff; text-decoration:underline; cursor:pointer }
+
+/* Join form inputs inside card */
+.card-section.join-form { display:flex; flex-direction:column; gap:0.5rem; padding:0.5rem 0 }
+.card-section.join-form input[type="text"], .card-section.join-form input[type="email"] { padding: 0.5rem; border-radius:6px; border:1px solid #d1d5db; width:100% }
+
+/* Make the submit/cancel buttons in the inline join form match the join button sizing
+   and give them distinct colors. */
+.card-section.join-form .join-btn,
+.card-section.join-form .submit-btn {
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+  width: auto;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.card-section.join-form .join-btn { background: #0b5cff; color: #fff; }
+.card-section.join-form .submit-btn { background: #6b7280; color: #fff; border: none; }
+.card-section.join-form .join-btn:hover:not(:disabled),
+.card-section.join-form .submit-btn:hover:not(:disabled) { transform: translateY(-1px) }
