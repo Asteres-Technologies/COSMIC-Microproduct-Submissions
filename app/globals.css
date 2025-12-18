@@ -80,9 +80,9 @@ button,
   --color-danger: #dc2626;
   /* border and highlight tones to avoid hard white strokes; default to transparent to remove stroked edges */
   --neu-border: transparent;
-  --neu-highlight: rgba(255, 255, 255, 0.45);
+  --neu-highlight: rgba(255, 255, 255, 0.60);
   /* Additional highlight token (kept as variable for clarity) */
-  --highlight-surface: rgba(255, 255, 255, 0.45);
+  --highlight-surface: rgba(255, 255, 255, 0.60);
   
   /* Soft neumorphic shadows - very subtle */
     --neu-shadow-dark: var(--shadow-normal);
@@ -120,6 +120,13 @@ button,
   --fs-lg: 1.15rem;     /* Card titles, prominent labels */
   --fs-md: 0.9375rem;   /* Body / default */
   --fs-sm: 0.875rem;    /* Small / helper text */
+
+  /* Unclassified tab sizing (used to compute offsets) */
+  --unclassified-tab-font: calc(var(--fs-sm) * 1.25);
+  --unclassified-tab-vertical-padding: calc(0.25rem * 1.25);
+  --unclassified-tab-horizontal-padding: calc(0.75rem * 1.25);
+  --unclassified-tab-height: calc(var(--unclassified-tab-font) + (var(--unclassified-tab-vertical-padding) * 2));
+  --unclassified-tab-top-offset: 12px;
 }
 
 @theme inline {
@@ -141,7 +148,7 @@ button,
     --neu-shadow-dark: var(--shadow-normal);
     --neu-shadow-light: var(--highlight-surface);
     --neu-border: transparent;
-    --neu-highlight: rgba(0, 0, 0, 0.18);
+    --neu-highlight: rgba(0, 0, 0, 0.24);
       /* Map neu shadow aliases to the shadow token list for consistency */
       --shadow-umbral: rgba(0, 0, 0, 0.5);
       --shadow-penumbra: rgba(0, 0, 0, 0.6);
@@ -183,6 +190,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
+  /* push page content down so titles clear the floating unclassified tab */
+  padding-top: calc(var(--unclassified-tab-top-offset) + (var(--unclassified-tab-height) / 2));
 }
 
 /* Ensure no background-image gradients are applied site-wide */
@@ -444,4 +453,35 @@ section {
   color: var(--color-danger);
   font-size: var(--fs-sm);
   margin-top: 0.25rem;
+}
+
+/* Global unclassified/public tab shown at top and bottom of pages */
+.unclassified-tab{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:60;
+  /* use project green token for subtle tint */
+  background: var(--color-success);
+  /* restore subtle grey text for reduced color palette */
+  color: var(--neu-text-muted);
+  padding: var(--unclassified-tab-vertical-padding) var(--unclassified-tab-horizontal-padding);
+  border-radius:999px;
+  font-size: var(--unclassified-tab-font);
+  font-weight:700;
+  /* floating popped-out style (preferred) */
+  background: var(--color-success);
+  box-shadow:
+    12px 12px 24px rgba(0,0,0,0.12),
+    -8px -8px 18px var(--neu-highlight),
+    2px 2px 4px rgba(0,0,0,0.04);
+  pointer-events:none;
+}
+
+.unclassified-tab.top{top:12px}
+
+@media(max-width:640px){
+  .unclassified-tab{font-size:calc(var(--fs-sm) * 1.1);padding:calc(0.25rem * 1.05) calc(0.75rem * 1.05)}
+  .unclassified-tab.top{top:8px}
+  :root{--unclassified-tab-top-offset:8px}
 }

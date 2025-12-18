@@ -22,6 +22,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistSans.variable} antialiased`}
       >
+        <div className="unclassified-tab top">unclassified / public</div>
         {children}
       </body>
     </html>

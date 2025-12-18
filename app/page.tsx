@@ -67,7 +67,10 @@ export default function Home() {
           <h1 className="hero-title">COSMIC Microproducts Portal</h1>
           <p className="hero-sub">A lightweight approach to delivering focused, time-boxed products for the space community</p>
           <p className="hero-desc">
-            This portal helps COSMIC members propose, track, and showcase small, time‑boxed projects. Design a clearly scoped microproduct (2–12 weeks), assemble a small team or go solo, then use the submission form to propose your idea and the Browse page to find, follow, or join existing microproducts.
+            This portal helps COSMIC members propose, track, and showcase small, time‑boxed projects. Design a clearly scoped microproduct (2–12 weeks), assemble a small team or go solo, then use the submission form to propose your idea and the browse page to find, follow, or join existing microproducts.
+            <br />
+            <br />
+            <b>Ensure that all data and information submitted is unclassified and approved for public release as this is an open public portal.</b>
           </p>
           <section className="what">
             <h2>What is a Microproduct?</h2>
