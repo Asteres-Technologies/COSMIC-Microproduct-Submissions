@@ -102,12 +102,12 @@ export default function BrowsePage() {
     if (!tm) return null;
     if (Array.isArray(tm)) {
       return tm.map((m: any, i: number) => (
-        <div key={i} className="member">{m.name}{m.email ? ` <${m.email}>` : ''}</div>
+        <div key={i} className="member">{m.name}</div>
       ));
     }
     if (typeof tm === 'string') {
       return tm.split(/\r?\n/).map((line: string, i: number) => (
-        <div key={i} className="member">{line}</div>
+        <div key={i} className="member">{line.split('<')[0].trim()}</div>
       ));
     }
     return null;
@@ -167,7 +167,7 @@ export default function BrowsePage() {
 
                 <div className="card-section">
                   <h4 className="md-heading">Lead</h4>
-                  <div className="section-body">{p.lead_name ?? '—'} {p.lead_email ? `(${p.lead_email})` : ''}</div>
+                  <div className="section-body">{p.lead_name ?? '—'}</div>
                 </div>
 
                 <div className="card-section">
