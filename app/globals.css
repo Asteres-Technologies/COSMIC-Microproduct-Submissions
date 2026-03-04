@@ -136,7 +136,7 @@ button,
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
     --neu-bg: var(--color-bg);
     --neu-surface: var(--color-surface);
