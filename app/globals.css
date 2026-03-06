@@ -476,6 +476,8 @@ section {
     -8px -8px 18px var(--neu-highlight),
     2px 2px 4px rgba(0,0,0,0.04);
   pointer-events:none;
+  /* HIDDEN - using new classification marking instead */
+  display: none !important;
 }
 
 .unclassified-tab.top{top:12px}

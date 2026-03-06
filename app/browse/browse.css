@@ -1,7 +1,132 @@
-/* ============================================
-   SUBMIT PAGE STYLES
-   ============================================ */
+/* BROWSE PAGE LAYOUT - NO STYLING YET, JUST STRUCTURE */
 
+.browse-container {
+  margin: 0;
+  padding: 0;
+}
+
+/* NEW BROWSE PAGE LAYOUT */
+.browse-page-layout {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 0;
+}
+
+/* Classification marking - top center (reuse from landing) */
+.browse-page-layout .classification-marking {
+  position: fixed;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  padding: 5px 15px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 16px;
+  text-transform: lowercase;
+}
+
+/* Table container - centered with max-width */
+.table-container {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Table row - fixed column grid */
+.table-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid currentColor;
+  align-items: center;
+}
+
+/* Column 1: Title - left-aligned, truncated */
+.table-row .title {
+  font-weight: 700;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Column 2: Duration - left-aligned */
+.table-row .duration {
+  font-weight: 400;
+  font-size: 14px;
+}
+
+/* Column 3: Members - left-aligned */
+.table-row .members {
+  font-weight: 400;
+  font-size: 14px;
+}
+
+/* Column 4: Status - centered, uppercase */
+.table-row .status {
+  font-weight: 400;
+  font-size: 14px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* Column 5: Actions - right-aligned */
+.table-row .actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.btn-view,
+.btn-join {
+  font-weight: 300;
+  font-size: 11px;
+  padding: 5px 25px;
+  border-radius: 33px;
+  border: 1px solid currentColor;
+  background: transparent;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.btn-join:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Bottom navigation - centered */
+.browse-page-layout .bottom-nav {
+  position: fixed;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 16px;
+  z-index: 10;
+}
+
+.browse-page-layout .bottom-nav a {
+  font-weight: 300;
+  font-size: 12px;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: all 200ms ease;
+}
+
+.browse-page-layout .bottom-nav a:hover {
+  transform: translateY(-10px);
+  font-weight: 700;
+}
+
+/* OLD STYLES - KEPT FOR REFERENCE */
 .submit-container {
   max-width: 2400px;
   margin: 0 auto;
@@ -60,16 +185,6 @@
   align-items: center;
   gap: 0.5rem;
   font-weight: normal;
-}
-
-/* ============================================
-   BROWSE PAGE STYLES
-   ============================================ */
-
-.browse-container {
-  max-width: 2400px;
-  margin: 0 auto;
-  padding: 2rem;
 }
 
 .browse-container h1 {

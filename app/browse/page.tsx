@@ -115,111 +115,171 @@ export default function BrowsePage() {
 
   return (
     <div className="browse-container">
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem' }}>
-        <h1>Browse Microproducts</h1>
-        <Link href="/" className="home-btn">Home</Link>
+      {/* NEW BROWSE PAGE LAYOUT */}
+      <div className="browse-page-layout">
+        {/* Classification marking - top center */}
+        <div className="classification-marking">unclassified / public</div>
+
+        {/* Table container - centered */}
+        <div className="table-container">
+          {loading && <div>Loading...</div>}
+          
+          {!loading && opportunities.length === 0 && (
+            <div>No opportunities found.</div>
+          )}
+
+          {/* Table rows */}
+          {opportunities.map((opp) => {
+            const p = opp.parsed || {};
+            const status = (opp.name?.split('__')?.[0] ?? '').toLowerCase();
+            const teamCount = p.team_members ? (Array.isArray(p.team_members) ? p.team_members.length : p.team_members.split(/\r?\n/).length) : 0;
+
+            return (
+              <div className="table-row" key={opp.path}>
+                {/* Column 1: Title */}
+                <div className="title">{p.title ?? opp.name}</div>
+                
+                {/* Column 2: Duration */}
+                <div className="duration">{p.duration_weeks ?? '—'} Weeks</div>
+                
+                {/* Column 3: Members */}
+                <div className="members">{teamCount} Members</div>
+                
+                {/* Column 4: Status */}
+                <div className="status">{status.toUpperCase()}</div>
+                
+                {/* Column 5: Actions */}
+                <div className="actions">
+                  <button className="btn-view">VIEW</button>
+                  {!joined[opp.name] && !joinForms[opp.name] && (
+                    <button className="btn-join" onClick={() => startJoin(opp.name)}>JOIN</button>
+                  )}
+                  {joined[opp.name] && (
+                    <button className="btn-join" disabled>JOINED</button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Bottom navigation - centered */}
+        <nav className="bottom-nav">
+          <Link href="/">HOME</Link>
+          <Link href="/submit">SUBMIT PRODUCT</Link>
+          <Link href="/browse">BROWSE PRODUCTS</Link>
+          <a href="https://cosmicspace.org/news/" target="_blank" rel="noreferrer">NEWS</a>
+        </nav>
       </div>
-      <p className="subtitle">Explore current opportunities and join a team.</p>
 
-      {loading && <div>Loading...</div>}
+      {/* OLD LAYOUT - HIDDEN BUT PRESERVED */}
+      <div className="browse-old-layout" style={{ display: 'none' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem' }}>
+          <h1>Browse Microproducts</h1>
+          <Link href="/" className="home-btn">Home</Link>
+        </div>
+        <p className="subtitle">Explore current opportunities and join a team.</p>
 
-      {!loading && opportunities.length === 0 && (
-        <div>No opportunities found.</div>
-      )}
+        {loading && <div>Loading...</div>}
 
-      <div className="cards">
-        {opportunities.map((opp) => {
-          const p = opp.parsed || {};
-          const status = (opp.name?.split('__')?.[0] ?? '').toLowerCase();
-          const statusClass = status.replace(/[^a-z0-9-_]/g, '') || 'unknown';
+        {!loading && opportunities.length === 0 && (
+          <div>No opportunities found.</div>
+        )}
 
-          return (
-            <div className="card" key={opp.path}>
-              <div className="card-header">
-                <h3 className="title">{p.title ?? opp.name}</h3>
-                <div className={`status ${statusClass}`}>{status}</div>
-              </div>
+        <div className="cards">
+          {opportunities.map((opp) => {
+            const p = opp.parsed || {};
+            const status = (opp.name?.split('__')?.[0] ?? '').toLowerCase();
+            const statusClass = status.replace(/[^a-z0-9-_]/g, '') || 'unknown';
 
-              <div className="card-section">
-                    <h4 className="md-heading">Description</h4>
-                    <div className="section-body">{p.purpose ?? '—'}</div>
+            return (
+              <div className="card" key={opp.path}>
+                <div className="card-header">
+                  <h3 className="title">{p.title ?? opp.name}</h3>
+                  <div className={`status ${statusClass}`}>{status}</div>
+                </div>
+
+                <div className="card-section">
+                      <h4 className="md-heading">Description</h4>
+                      <div className="section-body">{p.purpose ?? '—'}</div>
+                    </div>
+
+                <div className="card-section">
+                  <h4 className="md-heading">Deliverable</h4>
+                  <div className="section-body">{p.deliverable ?? '—'}</div>
+                </div>
+
+                <div className="card-grid">
+                  <div className="card-section">
+                    <h4 className="md-heading">Timeline</h4>
+                    <div className="section-body" style={{ whiteSpace: 'pre-wrap' }}>{p.milestones ?? '—'}</div>
                   </div>
 
-              <div className="card-section">
-                <h4 className="md-heading">Deliverable</h4>
-                <div className="section-body">{p.deliverable ?? '—'}</div>
-              </div>
-
-              <div className="card-grid">
-                <div className="card-section">
-                  <h4 className="md-heading">Timeline</h4>
-                  <div className="section-body" style={{ whiteSpace: 'pre-wrap' }}>{p.milestones ?? '—'}</div>
-                </div>
-
-                <div className="card-section">
-                  <h4 className="md-heading">Metadata</h4>
-                  <div className="section-body small">
-                    <div><strong>Output:</strong> {p.output_type ?? '—'}</div>
-                    <div><strong>Duration:</strong> {p.duration_weeks ?? '—'} weeks</div>
-                    <div><strong>Focus:</strong> {p.focus_area ?? '—'}</div>
+                  <div className="card-section">
+                    <h4 className="md-heading">Metadata</h4>
+                    <div className="section-body small">
+                      <div><strong>Output:</strong> {p.output_type ?? '—'}</div>
+                      <div><strong>Duration:</strong> {p.duration_weeks ?? '—'} weeks</div>
+                      <div><strong>Focus:</strong> {p.focus_area ?? '—'}</div>
+                    </div>
                   </div>
+
+                  <div className="card-section">
+                    <h4 className="md-heading">Lead</h4>
+                    <div className="section-body">{p.lead_name ?? '—'}</div>
+                  </div>
+
+                  <div className="card-section">
+                    <h4 className="md-heading">Team</h4>
+                    <div className="section-body team-list">{renderTeam(p) ?? '—'}</div>
+                  </div>
+
+                  {p.dependencies && (
+                    <div className="card-section full-width">
+                      <h4 className="md-heading">Dependencies</h4>
+                      <div className="section-body">{p.dependencies}</div>
+                    </div>
+                  )}
                 </div>
 
-                <div className="card-section">
-                  <h4 className="md-heading">Lead</h4>
-                  <div className="section-body">{p.lead_name ?? '—'}</div>
-                </div>
-
-                <div className="card-section">
-                  <h4 className="md-heading">Team</h4>
-                  <div className="section-body team-list">{renderTeam(p) ?? '—'}</div>
-                </div>
-
-                {p.dependencies && (
-                  <div className="card-section full-width">
-                    <h4 className="md-heading">Dependencies</h4>
-                    <div className="section-body">{p.dependencies}</div>
+                {/* Join form area */}
+                {joinForms[opp.name] && (
+                  <div className="card-section join-form">
+                    <input
+                      type="text"
+                      placeholder="Your name"
+                      value={joinForms[opp.name].name}
+                      onChange={(e) => setJoinForms(prev => ({ ...prev, [opp.name]: { ...prev[opp.name], name: e.target.value } }))}
+                    />
+                    <input
+                      type="email"
+                      placeholder="Your email"
+                      value={joinForms[opp.name].email}
+                      onChange={(e) => setJoinForms(prev => ({ ...prev, [opp.name]: { ...prev[opp.name], email: e.target.value } }))}
+                    />
+                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                      <button className="join-btn" onClick={() => submitJoin(opp.name)} disabled={!!joinForms[opp.name].submitting}>
+                        <span className="btn-label">{joinForms[opp.name].submitting ? 'Joining...' : 'Submit'}</span>
+                      </button>
+                      <button className="submit-btn" onClick={() => cancelJoin(opp.name)}><span className="btn-label">Cancel</span></button>
+                    </div>
+                    {joinForms[opp.name].error && <div className="alert error" style={{ marginTop: '0.5rem' }}>{joinForms[opp.name].error}</div>}
                   </div>
                 )}
-              </div>
 
-              {/* Join form area */}
-              {joinForms[opp.name] && (
-                <div className="card-section join-form">
-                  <input
-                    type="text"
-                    placeholder="Your name"
-                    value={joinForms[opp.name].name}
-                    onChange={(e) => setJoinForms(prev => ({ ...prev, [opp.name]: { ...prev[opp.name], name: e.target.value } }))}
-                  />
-                  <input
-                    type="email"
-                    placeholder="Your email"
-                    value={joinForms[opp.name].email}
-                    onChange={(e) => setJoinForms(prev => ({ ...prev, [opp.name]: { ...prev[opp.name], email: e.target.value } }))}
-                  />
-                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-                    <button className="join-btn" onClick={() => submitJoin(opp.name)} disabled={!!joinForms[opp.name].submitting}>
-                      <span className="btn-label">{joinForms[opp.name].submitting ? 'Joining...' : 'Submit'}</span>
-                    </button>
-                    <button className="submit-btn" onClick={() => cancelJoin(opp.name)}><span className="btn-label">Cancel</span></button>
-                  </div>
-                  {joinForms[opp.name].error && <div className="alert error" style={{ marginTop: '0.5rem' }}>{joinForms[opp.name].error}</div>}
+                <div className="card-actions">
+                  <div />
+                  {!joined[opp.name] && !joinForms[opp.name] && (
+                    <button className="join-btn" onClick={() => startJoin(opp.name)}><span className="btn-label">Join</span></button>
+                  )}
+                  {joined[opp.name] && (
+                    <button className="join-btn" disabled><span className="btn-label">Joined</span></button>
+                  )}
                 </div>
-              )}
-
-              <div className="card-actions">
-                <div />
-                {!joined[opp.name] && !joinForms[opp.name] && (
-                  <button className="join-btn" onClick={() => startJoin(opp.name)}><span className="btn-label">Join</span></button>
-                )}
-                {joined[opp.name] && (
-                  <button className="join-btn" disabled><span className="btn-label">Joined</span></button>
-                )}
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );

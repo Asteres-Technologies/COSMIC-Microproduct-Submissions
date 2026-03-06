@@ -62,7 +62,44 @@ export default function Home() {
 
   return (
     <div className="landing-container">
-      <header className="hero">
+      {/* NEW HERO PAGE LAYOUT */}
+      <div className="hero-page-layout">
+        {/* Classification marking - top center */}
+        <div className="classification-marking">unclassified / public</div>
+
+        {/* Vertical progress indicator - left rail */}
+        <div className="progress-indicator">
+          <div className="progress-marker active">01</div>
+          <div className="progress-marker secondary">02</div>
+          <div className="progress-marker tertiary">03</div>
+          <div className="progress-marker quaternary">04</div>
+        </div>
+
+        {/* Hero number - left region */}
+        <div className="hero-number">01.</div>
+
+        {/* Main content block - right-aligned */}
+        <div className="main-content-block">
+          <p className="section-notice">Ensure that all data and information submitted is unclassified and approved for public release as this is an open public portal.</p>
+          <h1 className="main-heading">COSMIC Microproducts Portal</h1>
+          <div className="decorator-line"></div>
+          <p className="meta-info">A lightweight approach to delivering focused, time-boxed products for the space community</p>
+          <p className="body-paragraph">
+            This portal helps COSMIC members propose, track, and showcase small, time‑boxed projects. Design a clearly scoped microproduct (2–12 weeks), assemble a small team or go solo, then use the submission form to propose your idea and the browse page to find, follow, or join existing microproducts.
+          </p>
+        </div>
+
+        {/* Bottom navigation - bottom right */}
+        <nav className="bottom-nav">
+          <Link href="/">HOME</Link>
+          <Link href="/submit">SUBMIT PRODUCT</Link>
+          <Link href="/browse">BROWSE PRODUCTS</Link>
+          <a href="https://cosmicspace.org/news/" target="_blank" rel="noreferrer">NEWS</a>
+        </nav>
+      </div>
+
+      {/* EXISTING ELEMENTS - HIDDEN BUT PRESERVED */}
+      <header className="hero hero-hidden">
         <div className="hero-inner">
           <h1 className="hero-title">COSMIC Microproducts Portal</h1>
           <p className="hero-sub">A lightweight approach to delivering focused, time-boxed products for the space community</p>
@@ -115,9 +152,7 @@ export default function Home() {
         </aside>
       </header>
 
-      
-
-      <section className="recent">
+      <section className="recent recent-hidden">
         <h2>Recent Activity</h2>
         {recent.length === 0 && <div>No recent activity.</div>}
         <ul className="recent-list">
@@ -136,8 +171,6 @@ export default function Home() {
           ))}
         </ul>
       </section>
-
-      
     </div>
   );
 }
