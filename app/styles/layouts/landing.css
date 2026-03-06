@@ -180,7 +180,7 @@
   color: var(--color-text);
   text-decoration: none;
   text-transform: uppercase;
-  transition: all 200ms ease;
+  transition: all 400ms ease-in-out;
   padding: 10px 0;
   position: relative;
 }

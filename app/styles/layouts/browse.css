@@ -117,21 +117,26 @@
 .btn-join {
   font-family: var(--font-inter);
   font-weight: var(--fw-light);
-  font-size: var(--fs-button);
+  font-size: 11px;
   color: var(--color-text);
   padding: 5px 25px;
   border-radius: 33px;
-  border: 1px solid var(--color-text);
+  border: 1px solid transparent;
   background: transparent;
+  background-image: linear-gradient(to bottom right, #E7E7E7, rgba(225, 225, 225, 0));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
   cursor: pointer;
   text-transform: uppercase;
-  transition: all var(--transition-duration) var(--transition-easing);
-  box-shadow: var(--shadow-button);
+  transition: background-color 400ms ease-in-out, color 400ms ease-in-out;
+  box-shadow: 0 4px 6.3px rgba(0, 0, 0, 0.1);
 }
 
 .btn-view:hover,
 .btn-join:hover {
-  opacity: var(--opacity-full);
+  background-color: #696A6F;
+  background-image: none;
+  color: white;
 }
 
 .btn-join:disabled {
