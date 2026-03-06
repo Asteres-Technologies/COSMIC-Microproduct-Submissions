@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { HERO_CUTOUT_CONFIG } from '@/lib/hero-cutout-config';
 
 type Opportunity = {
   name: string;
@@ -170,7 +171,7 @@ export default function Home() {
             
             {/* Blur filter for cutout area */}
             <filter id="cutout-blur">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" />
+              <feGaussianBlur in="SourceGraphic" stdDeviation={HERO_CUTOUT_CONFIG.cutoutBlur} />
             </filter>
             
             {/* Inverted mask: white = visible glass, dark gray = engraved look */}
@@ -184,8 +185,8 @@ export default function Home() {
                 dominantBaseline="middle"
                 fontFamily="Inter, sans-serif"
                 fontWeight="800"
-                fontSize="160"
-                fill="#3f3f3f50" 
+                fontSize={HERO_CUTOUT_CONFIG.fontSize}
+                fill={HERO_CUTOUT_CONFIG.maskFill} 
               >
                 01.
               </text>
@@ -203,13 +204,13 @@ export default function Home() {
             {/* Correct Inner Shadow Filter */}
             <filter id="inner-shadow-filter" x="-50%" y="-50%" width="200%" height="200%">
               {/* 1. Blur the shape */}
-              <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur" />
+              <feGaussianBlur in="SourceAlpha" stdDeviation={HERO_CUTOUT_CONFIG.shadowBlur} result="blur" />
               {/* 2. Shift it down/right */}
-              <feOffset dx="6" dy="8" result="offsetBlur" />
+              <feOffset dx={HERO_CUTOUT_CONFIG.shadowOffsetX} dy={HERO_CUTOUT_CONFIG.shadowOffsetY} result="offsetBlur" />
               {/* 3. Subtract original shape to leave only the inner ledge */}
               <feComposite in="offsetBlur" in2="SourceAlpha" operator="out" result="innerSliver" />
               {/* 4. Color it black */}
-              <feFlood floodColor="black" floodOpacity="0.8" result="blackColor" />
+              <feFlood floodColor="black" floodOpacity={HERO_CUTOUT_CONFIG.shadowOpacity} result="blackColor" />
               <feComposite in="blackColor" in2="innerSliver" operator="in" result="finalShadow" />
               {/* 5. Clip it to stay inside the number boundaries */}
               <feComposite in="finalShadow" in2="SourceAlpha" operator="in" result="clippedShadow" />
@@ -230,10 +231,10 @@ export default function Home() {
             dominantBaseline="middle"
             fontFamily="Inter, sans-serif"
             fontWeight="800"
-            fontSize="160"
-            fill="rgba(95, 95, 95, 0.16)"
+            fontSize={HERO_CUTOUT_CONFIG.fontSize}
+            fill={HERO_CUTOUT_CONFIG.fillColor}
             stroke="url(#hero-gradient-stroke)"
-            strokeWidth="2"
+            strokeWidth={HERO_CUTOUT_CONFIG.strokeWidth}
             filter="url(#inner-shadow-filter)"
           >
             01.
