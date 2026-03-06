@@ -239,6 +239,9 @@ export default function BrowsePage() {
 
         {/* Table container - centered */}
         <div className="table-container">
+          {/* Page heading */}
+          <h1 className="browse-heading">Browse Microproducts</h1>
+          
           {/* Filter bar */}
           <div className="filter-bar">
             <div className={`filter-pills ${filtersVisible ? 'visible' : ''}`}>
@@ -299,7 +302,7 @@ export default function BrowsePage() {
                 <div className="members">{teamCount} Members</div>
                 
                 {/* Column 4: Status */}
-                <div className="status">{status.toUpperCase()}</div>
+                <div className={`status ${status === 'approved' ? 'approved' : 'pending'}`}>{status.toUpperCase()}</div>
                 
                 {/* Column 5: Actions */}
                 <div className="actions">

@@ -59,6 +59,17 @@
   gap: 0;
 }
 
+/* Browse page heading */
+.browse-heading {
+  font-family: var(--font-inter);
+  font-weight: var(--fw-bold);
+  font-size: 24px;
+  line-height: auto;
+  color: var(--color-text);
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+}
+
 /* Filter bar - right-aligned above table */
 .filter-bar {
   display: flex;
@@ -146,7 +157,7 @@
   grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
   gap: var(--spacing-md);
   padding: var(--spacing-md) 0;
-  border-bottom: 1px solid var(--color-text);
+  border-bottom: 1px solid rgba(105, 106, 111, 0.15);
   align-items: center;
 }
 
@@ -185,6 +196,15 @@
   color: var(--color-text);
   text-transform: uppercase;
   text-align: center;
+}
+
+.table-row .status.approved {
+  opacity: 1;
+  font-weight: 600;
+}
+
+.table-row .status.pending {
+  opacity: 0.5;
 }
 
 /* Column 5: Actions */
