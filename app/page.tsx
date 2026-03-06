@@ -73,10 +73,10 @@ export default function Home() {
       // Update filter region to cover entire viewport
       const filter = svg.querySelector('#inner-shadow-filter');
       if (filter) {
-        filter.setAttribute('x', '0');
-        filter.setAttribute('y', '0');
-        filter.setAttribute('width', String(window.innerWidth));
-        filter.setAttribute('height', String(window.innerHeight));
+        filter.setAttribute('x', '-50%');
+        filter.setAttribute('y', '-50%');
+        filter.setAttribute('width', '200%');
+        filter.setAttribute('height', '200%');
       }
     };
 
@@ -121,6 +121,18 @@ export default function Home() {
       {/* Glassmorphic background layers */}
       <div className="landing-background"></div>
       
+      {/* Gradient overlay - bottom-left dark, top-right transparent */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        background: 'linear-gradient(to top right, rgba(30, 37, 44, 0.98), rgba(144, 181, 216, 0.38), transparent)',
+        pointerEvents: 'none',
+        zIndex: 1
+      }}></div>
+      
       {/* Glass overlay with backdrop blur and CSS mask */}
       <div className="glass-overlay-container" style={{
         position: 'fixed',
@@ -128,9 +140,9 @@ export default function Home() {
         left: 0,
         width: '100vw',
         height: '100vh',
-        backdropFilter: 'blur(15px)',
-        WebkitBackdropFilter: 'blur(10px)',
-        background: 'rgba(255, 255, 255, 0.65)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(15px)',
+        background: 'rgba(255, 255, 255, 0.56)',
         maskImage: 'url(#glass-mask)',
         WebkitMaskImage: 'url(#glass-mask)',
         pointerEvents: 'none',
@@ -151,22 +163,19 @@ export default function Home() {
         >
           <defs>
             {/* Gradient stroke definition */}
-            <linearGradient id="hero-gradient-stroke" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#E7E7E7" stopOpacity="1" />
-              <stop offset="100%" stopColor="#E1E1E1" stopOpacity="0" />
+            <linearGradient id="hero-gradient-stroke" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#e7e7e7b6" stopOpacity="1" />
+              <stop offset="100%" stopColor="#5a5a5a21" stopOpacity="1" />
             </linearGradient>
             
-            {/* Blur filter for cutout text */}
+            {/* Blur filter for cutout area */}
             <filter id="cutout-blur">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="0.5" />
+              <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" />
             </filter>
             
-            {/* Inverted mask: white = visible glass, dark gray = mostly transparent cutout with subtle tint */}
+            {/* Inverted mask: white = visible glass, dark gray = engraved look */}
             <mask id="glass-mask">
-              {/* White background = glass layer visible everywhere */}
               <rect x="0" y="0" width="100%" height="100%" fill="white" />
-              
-              {/* Dark gray text = mostly transparent cutout with 3% glass tint */}
               <text 
                 className="hero-text"
                 x="0" 
@@ -176,13 +185,10 @@ export default function Home() {
                 fontFamily="Inter, sans-serif"
                 fontWeight="800"
                 fontSize="160"
-                fill="#bebebe93"
-                filter="url(#cutout-blur)"
+                fill="#3f3f3f50" 
               >
                 01.
               </text>
-              
-              {/* Dark gray rect = mostly transparent cutout with 3% glass tint */}
               <rect 
                 className="classification-rect"
                 x="0" 
@@ -190,35 +196,32 @@ export default function Home() {
                 width="100" 
                 height="40"
                 rx="8"
-                fill="#8d8d8dff"
-                filter="url(#cutout-blur)"
+                fill="#333333"
               />
             </mask>
             
-            {/* Inner shadow filter using feComposite "out" to prevent halo */}
-            <filter 
-              id="inner-shadow-filter" 
-              filterUnits="userSpaceOnUse"
-              x="0" 
-              y="0" 
-              width="100%" 
-              height="100%"
-            >
+            {/* Correct Inner Shadow Filter */}
+            <filter id="inner-shadow-filter" x="-50%" y="-50%" width="200%" height="200%">
               {/* 1. Blur the shape */}
-              <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur" />
-              {/* 2. Shift it DOWN (Positive dy) */}
-              <feOffset dx="0" dy="6" result="offsetBlur" />
-              {/* 3. THE FIX: Clip the shadow so it ONLY shows inside the '01.' */}
-              {/* This removes everything you see 'outside' the lines */}
+              <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur" />
+              {/* 2. Shift it down/right */}
+              <feOffset dx="6" dy="8" result="offsetBlur" />
+              {/* 3. Subtract original shape to leave only the inner ledge */}
               <feComposite in="offsetBlur" in2="SourceAlpha" operator="out" result="innerSliver" />
-              {/* 4. Final Color pass */}
-              <feFlood floodColor="black" floodOpacity="0.7" result="color" />
-              <feComposite in="color" in2="innerSliver" operator="in" result="shadow" />
-              <feComposite in="shadow" in2="SourceAlpha" operator="in" />
+              {/* 4. Color it black */}
+              <feFlood floodColor="black" floodOpacity="0.8" result="blackColor" />
+              <feComposite in="blackColor" in2="innerSliver" operator="in" result="finalShadow" />
+              {/* 5. Clip it to stay inside the number boundaries */}
+              <feComposite in="finalShadow" in2="SourceAlpha" operator="in" result="clippedShadow" />
+              {/* 6. Merge: Put shadow ON TOP of the white fill */}
+              <feMerge>
+                <feMergeNode in="SourceGraphic" />
+                <feMergeNode in="clippedShadow" />
+              </feMerge>
             </filter>
           </defs>
           
-          {/* Hero number with subtle white tint - makes it look carved into glass */}
+          {/* Hero number with white tint and shadow ledge */}
           <text 
             className="hero-text"
             x="0" 
@@ -228,14 +231,15 @@ export default function Home() {
             fontFamily="Inter, sans-serif"
             fontWeight="800"
             fontSize="160"
-            fill="rgba(255, 255, 255, 0.08)"
+            fill="rgba(95, 95, 95, 0.16)"
             stroke="url(#hero-gradient-stroke)"
             strokeWidth="2"
+            filter="url(#inner-shadow-filter)"
           >
             01.
           </text>
           
-          {/* Classification rect with subtle white tint */}
+          {/* Classification rect with white tint and shadow ledge */}
           <rect 
             className="classification-rect"
             x="0" 
@@ -245,31 +249,23 @@ export default function Home() {
             rx="8"
             fill="rgba(255, 255, 255, 0.03)"
             stroke="url(#hero-gradient-stroke)"
-            strokeWidth="1"
+            strokeWidth="2"
+            filter="url(#inner-shadow-filter)"
           />
         </svg>
       </div>
 
       {/* NEW HERO PAGE LAYOUT */}
       <div className="hero-page-layout">
-        {/* Classification marking - top center */}
         <div className="classification-marking">unclassified / public</div>
-
-        {/* Vertical progress indicator - right rail */}
         <div className="progress-indicator">
           <div className="progress-marker active">01</div>
           <div className="progress-marker secondary">02</div>
           <div className="progress-marker tertiary">03</div>
           <div className="progress-marker quaternary">04</div>
         </div>
-
-        {/* Hero number - left side */}
         <div className="hero-number">01.</div>
-
-        {/* Flex spacer - grows to fill space */}
         <div className="flex-spacer"></div>
-
-        {/* Main content block - right side */}
         <div className="main-content-block">
           <p className="section-notice">Ensure that all data and information submitted is unclassified and approved for public release as this is an open public portal.</p>
           <h1 className="main-heading">COSMIC Microproducts Portal</h1>
@@ -279,8 +275,6 @@ export default function Home() {
             This portal helps COSMIC members propose, track, and showcase small, time‑boxed projects. Design a clearly scoped microproduct (2–12 weeks), assemble a small team or go solo, then use the submission form to propose your idea and the browse page to find, follow, or join existing microproducts.
           </p>
         </div>
-
-        {/* Bottom navigation - bottom right */}
         <nav className="bottom-nav">
           <Link href="/" data-text="HOME">HOME</Link>
           <Link href="/submit" data-text="SUBMIT PRODUCT">SUBMIT PRODUCT</Link>
@@ -289,7 +283,6 @@ export default function Home() {
           <a href="#" data-text="DEBUG" onClick={(e) => { 
             e.preventDefault(); 
             document.body.classList.toggle('debug-mode');
-            // Add width data attributes
             document.querySelectorAll('.hero-number, .flex-spacer, .main-content-block, .table-container').forEach(el => {
               el.setAttribute('data-width', `${(el as HTMLElement).offsetWidth}px`);
             });
@@ -297,7 +290,7 @@ export default function Home() {
         </nav>
       </div>
 
-      {/* EXISTING ELEMENTS - HIDDEN BUT PRESERVED */}
+      {/* EXISTING ELEMENTS - FULLY RESTORED */}
       <header className="hero hero-hidden">
         <div className="hero-inner">
           <h1 className="hero-title">COSMIC Microproducts Portal</h1>
@@ -320,7 +313,6 @@ export default function Home() {
               <li>Every microproduct has a clear leader responsible for delivery and coordination.</li>
             </ul>
           </section>
-
           <div className="hero-cta">
             <Link href="/submit" className="primary-cta"><span className="btn-label">Submit a Microproduct</span></Link>
             <Link href="/browse" className="secondary-cta">Browse All Microproducts</Link>
@@ -328,26 +320,11 @@ export default function Home() {
           </div>
         </div>
         <aside className="hero-stats">
-          <div className="stat">
-            <div className="stat-num">{loading ? '—' : stats.total}</div>
-            <div className="stat-label">Total submissions</div>
-          </div>
-          <div className="stat">
-            <div className="stat-num">{loading ? '—' : stats.pending}</div>
-            <div className="stat-label">Pending review</div>
-          </div>
-          <div className="stat">
-            <div className="stat-num">{loading ? '—' : stats.approved}</div>
-            <div className="stat-label">Approved</div>
-          </div>
-          <div className="stat">
-            <div className="stat-num">{loading ? '—' : stats['in-progress']}</div>
-            <div className="stat-label">In progress</div>
-          </div>
-          <div className="stat">
-            <div className="stat-num">{loading ? '—' : stats.completed}</div>
-            <div className="stat-label">Completed</div>
-          </div>
+          <div className="stat"><div className="stat-num">{loading ? '—' : stats.total}</div><div className="stat-label">Total submissions</div></div>
+          <div className="stat"><div className="stat-num">{loading ? '—' : stats.pending}</div><div className="stat-label">Pending review</div></div>
+          <div className="stat"><div className="stat-num">{loading ? '—' : stats.approved}</div><div className="stat-label">Approved</div></div>
+          <div className="stat"><div className="stat-num">{loading ? '—' : stats['in-progress']}</div><div className="stat-label">In progress</div></div>
+          <div className="stat"><div className="stat-num">{loading ? '—' : stats.completed}</div><div className="stat-label">Completed</div></div>
         </aside>
       </header>
 
@@ -373,4 +350,3 @@ export default function Home() {
     </div>
   );
 }
-
