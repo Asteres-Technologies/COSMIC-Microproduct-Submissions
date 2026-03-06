@@ -12,14 +12,14 @@ export const HERO_CUTOUT_CONFIG = {
   strokeWidth: 3,
   
   // Inner shadow settings
-  shadowBlur: 4,           // Softness of shadow
-  shadowOffsetX: 6,        // Horizontal position
-  shadowOffsetY: 8,        // Vertical position
-  shadowOpacity: 0.8,      // Darkness (0-1)
+  shadowBlur: 12,          // Softness of shadow
+  shadowOffsetX: 15,       // Horizontal position
+  shadowOffsetY: 20,       // Vertical position
+  shadowOpacity: 0.9,      // Darkness (0-1)
   
   // Blur effect inside cutout
-  cutoutBlur: 2,
+  cutoutBlur: 1,
   
   // Mask fill color (controls cutout shape in mask)
-  maskFill: '#3f3f3f50'
+  maskFill: '#1d1d1d54'
 };

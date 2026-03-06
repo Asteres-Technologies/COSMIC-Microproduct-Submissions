@@ -37,6 +37,7 @@ export default function Home() {
   useEffect(() => {
     const updateSVGPositions = () => {
       const svg = document.getElementById('glass-cutout-svg') as unknown as SVGSVGElement;
+      const blackMaskSvg = document.getElementById('black-mask-svg') as unknown as SVGSVGElement;
       const heroNumber = document.querySelector('.hero-number') as HTMLElement;
       const classificationEl = document.querySelector('.classification-marking') as HTMLElement;
       
@@ -55,15 +56,21 @@ export default function Home() {
       svg.setAttribute('width', String(window.innerWidth));
       svg.setAttribute('height', String(window.innerHeight));
 
-      // Update hero text positions
-      const heroTexts = svg.querySelectorAll('.hero-text');
+      if (blackMaskSvg) {
+        blackMaskSvg.setAttribute('viewBox', `0 0 ${window.innerWidth} ${window.innerHeight}`);
+        blackMaskSvg.setAttribute('width', String(window.innerWidth));
+        blackMaskSvg.setAttribute('height', String(window.innerHeight));
+      }
+
+      // Update hero text positions in both SVGs
+      const heroTexts = document.querySelectorAll('.hero-text');
       heroTexts.forEach(text => {
         text.setAttribute('x', String(heroX));
         text.setAttribute('y', String(heroY));
       });
 
-      // Update classification rect positions
-      const classRects = svg.querySelectorAll('.classification-rect');
+      // Update classification rect positions in both SVGs
+      const classRects = document.querySelectorAll('.classification-rect');
       classRects.forEach(rect => {
         rect.setAttribute('x', String(classRect.left));
         rect.setAttribute('y', String(classRect.top));
@@ -172,11 +179,6 @@ export default function Home() {
               <stop offset="100%" stopColor="#5a5a5a21" stopOpacity="1" />
             </linearGradient>
             
-            {/* Blur filter for cutout area */}
-            <filter id="cutout-blur">
-              <feGaussianBlur in="SourceGraphic" stdDeviation={HERO_CUTOUT_CONFIG.cutoutBlur} />
-            </filter>
-            
             {/* Inverted mask: white = visible glass, dark gray = engraved look */}
             <mask id="glass-mask">
               <rect x="0" y="0" width="100%" height="100%" fill="white" />
@@ -203,29 +205,9 @@ export default function Home() {
                 fill="#333333"
               />
             </mask>
-            
-            {/* Correct Inner Shadow Filter */}
-            <filter id="inner-shadow-filter" x="-50%" y="-50%" width="200%" height="200%">
-              {/* 1. Blur the shape */}
-              <feGaussianBlur in="SourceAlpha" stdDeviation={HERO_CUTOUT_CONFIG.shadowBlur} result="blur" />
-              {/* 2. Shift it down/right */}
-              <feOffset dx={HERO_CUTOUT_CONFIG.shadowOffsetX} dy={HERO_CUTOUT_CONFIG.shadowOffsetY} result="offsetBlur" />
-              {/* 3. Subtract original shape to leave only the inner ledge */}
-              <feComposite in="offsetBlur" in2="SourceAlpha" operator="out" result="innerSliver" />
-              {/* 4. Color it black */}
-              <feFlood floodColor="black" floodOpacity={HERO_CUTOUT_CONFIG.shadowOpacity} result="blackColor" />
-              <feComposite in="blackColor" in2="innerSliver" operator="in" result="finalShadow" />
-              {/* 5. Clip it to stay inside the number boundaries */}
-              <feComposite in="finalShadow" in2="SourceAlpha" operator="in" result="clippedShadow" />
-              {/* 6. Merge: Put shadow ON TOP of the white fill */}
-              <feMerge>
-                <feMergeNode in="SourceGraphic" />
-                <feMergeNode in="clippedShadow" />
-              </feMerge>
-            </filter>
           </defs>
           
-          {/* Hero number with white tint and shadow ledge */}
+          {/* Hero number with white tint and gradient stroke */}
           <text 
             className="hero-text"
             x="0" 
@@ -238,12 +220,11 @@ export default function Home() {
             fill={HERO_CUTOUT_CONFIG.fillColor}
             stroke="url(#hero-gradient-stroke)"
             strokeWidth={HERO_CUTOUT_CONFIG.strokeWidth}
-            filter="url(#inner-shadow-filter)"
           >
             01.
           </text>
           
-          {/* Classification rect with white tint and shadow ledge */}
+          {/* Classification rect with white tint and gradient stroke */}
           <rect 
             className="classification-rect"
             x="0" 
@@ -254,7 +235,6 @@ export default function Home() {
             fill="rgba(255, 255, 255, 0.03)"
             stroke="url(#hero-gradient-stroke)"
             strokeWidth="2"
-            filter="url(#inner-shadow-filter)"
           />
         </svg>
       </div>
