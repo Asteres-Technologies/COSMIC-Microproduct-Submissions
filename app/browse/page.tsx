@@ -17,6 +17,8 @@ export default function BrowsePage() {
   const [loading, setLoading] = useState(true);
   const [joined, setJoined] = useState<Record<string, boolean>>({});
   const [joinForms, setJoinForms] = useState<Record<string, { name: string; email: string; submitting?: boolean; error?: string }>>({});
+  const [filtersVisible, setFiltersVisible] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<'length' | 'members' | 'status' | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -139,6 +141,49 @@ export default function BrowsePage() {
     }
   };
 
+  const handleFilterClick = (filter: 'length' | 'members' | 'status') => {
+    if (activeFilter === filter) {
+      setActiveFilter(null);
+    } else {
+      setActiveFilter(filter);
+    }
+  };
+
+  const getSortedOpportunities = () => {
+    const opps = [...opportunities];
+    
+    if (activeFilter === 'length') {
+      return opps.sort((a, b) => {
+        const durationA = a.parsed?.duration_weeks ?? 0;
+        const durationB = b.parsed?.duration_weeks ?? 0;
+        return durationB - durationA; // Descending
+      });
+    }
+    
+    if (activeFilter === 'members') {
+      return opps.sort((a, b) => {
+        const countA = a.parsed?.team_members ? (Array.isArray(a.parsed.team_members) ? a.parsed.team_members.length : a.parsed.team_members.split(/\r?\n/).length) : 0;
+        const countB = b.parsed?.team_members ? (Array.isArray(b.parsed.team_members) ? b.parsed.team_members.length : b.parsed.team_members.split(/\r?\n/).length) : 0;
+        return countB - countA; // Descending
+      });
+    }
+    
+    if (activeFilter === 'status') {
+      return opps.sort((a, b) => {
+        const statusA = (a.name?.split('__')?.[0] ?? '').toLowerCase();
+        const statusB = (b.name?.split('__')?.[0] ?? '').toLowerCase();
+        if (statusA !== statusB) {
+          return statusA.localeCompare(statusB);
+        }
+        const titleA = a.parsed?.title ?? a.name ?? '';
+        const titleB = b.parsed?.title ?? b.name ?? '';
+        return titleA.localeCompare(titleB);
+      });
+    }
+    
+    return opps; // Default order
+  };
+
   const renderTeam = (rawOrParsed: any) => {
     if (!rawOrParsed) return null;
     const tm = rawOrParsed.team_members;
@@ -194,6 +239,42 @@ export default function BrowsePage() {
 
         {/* Table container - centered */}
         <div className="table-container">
+          {/* Filter bar */}
+          <div className="filter-bar">
+            <div className={`filter-pills ${filtersVisible ? 'visible' : ''}`}>
+              <button 
+                className={`filter-pill ${activeFilter === 'length' ? 'active' : ''}`}
+                onClick={() => handleFilterClick('length')}
+              >
+                project length
+              </button>
+              <button 
+                className={`filter-pill ${activeFilter === 'members' ? 'active' : ''}`}
+                onClick={() => handleFilterClick('members')}
+              >
+                members
+              </button>
+              <button 
+                className={`filter-pill ${activeFilter === 'status' ? 'active' : ''}`}
+                onClick={() => handleFilterClick('status')}
+              >
+                status
+              </button>
+            </div>
+            
+            <button 
+              className="filter-trigger"
+              onClick={() => setFiltersVisible(!filtersVisible)}
+            >
+              <svg width="7" height="7" viewBox="0 0 7 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="7" height="1" fill="#696A6F"/>
+                <rect y="3" width="5" height="1" fill="#696A6F"/>
+                <rect y="6" width="3" height="1" fill="#696A6F"/>
+              </svg>
+              <span>filters</span>
+            </button>
+          </div>
+          
           {loading && <div>Loading...</div>}
           
           {!loading && opportunities.length === 0 && (
@@ -201,7 +282,7 @@ export default function BrowsePage() {
           )}
 
           {/* Table rows */}
-          {opportunities.map((opp) => {
+          {getSortedOpportunities().map((opp) => {
             const p = opp.parsed || {};
             const status = (opp.name?.split('__')?.[0] ?? '').toLowerCase();
             const teamCount = p.team_members ? (Array.isArray(p.team_members) ? p.team_members.length : p.team_members.split(/\r?\n/).length) : 0;
