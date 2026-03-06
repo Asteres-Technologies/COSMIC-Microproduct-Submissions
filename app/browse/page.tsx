@@ -161,91 +161,31 @@ export default function BrowsePage() {
       {/* Glassmorphic background layers */}
       <div className="browse-background"></div>
       
-      {/* Glass overlay with backdrop blur */}
-      <div className="glass-overlay-container">
-        <svg 
-          id="glass-cutout-svg" 
-          xmlns="http://www.w3.org/2000/svg"
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            zIndex: 2,
-            pointerEvents: 'none',
-            overflow: 'visible'
-          }}
-        >
-          <defs>
-            {/* Inverted mask: white = visible glass, black = cutout holes */}
-            <mask id="glass-mask">
-              {/* White background = glass layer visible everywhere */}
-              <rect x="0" y="0" width="100%" height="100%" fill="white" />
-              
-              {/* Black rect = cutout hole for classification */}
-              <rect 
-                className="classification-rect"
-                x="0" 
-                y="0" 
-                width="100" 
-                height="40"
-                rx="8"
-                fill="black"
-              />
-            </mask>
-            
-            {/* Inner shadow filter using feComposite "out" to prevent halo */}
-            <filter 
-              id="inner-shadow-filter" 
-              filterUnits="userSpaceOnUse"
-              x="0" 
-              y="0" 
-              width="100%" 
-              height="100%"
-            >
-              {/* Create shadow */}
-              <feGaussianBlur in="SourceAlpha" stdDeviation="10" result="blur" />
-              <feOffset in="blur" dx="0" dy="-12" result="offsetBlur" />
-              
-              {/* Composite "out" = shadow only INSIDE the shape, no external halo */}
-              <feComposite in="offsetBlur" in2="SourceAlpha" operator="out" result="innerShadow" />
-              
-              {/* Color the shadow */}
-              <feFlood floodColor="rgb(0, 0, 0)" result="shadowColor" />
-              <feComposite in="shadowColor" in2="innerShadow" operator="in" result="coloredShadow" />
-              
-              {/* Combine with original */}
-              <feMerge>
-                <feMergeNode in="coloredShadow" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
-          
-          {/* Glass layer with mask applied */}
-          <rect 
-            x="0" 
-            y="0" 
-            width="100%" 
-            height="100%" 
-            fill="rgba(255, 255, 255, 0.65)"
-            mask="url(#glass-mask)"
-          />
-          
-          {/* Classification rect with subtle overlay and inner shadow */}
-          <rect 
-            className="classification-rect"
-            x="0" 
-            y="0" 
-            width="100" 
-            height="40"
-            rx="8"
-            fill="rgba(255, 255, 255, 0.05)"
-            filter="url(#inner-shadow-filter)"
-          />
-        </svg>
-      </div>
+      {/* Gradient overlay - bottom dark to top transparent */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        background: 'linear-gradient(to top right, rgba(30, 37, 44, 0.98), rgba(144, 181, 216, 0.38), transparent)',
+        pointerEvents: 'none',
+        zIndex: 1
+      }}></div>
+      
+      {/* Glass overlay with backdrop blur - NO CUTOUTS */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(15px)',
+        background: 'rgba(255, 255, 255, 0.56)',
+        pointerEvents: 'none',
+        zIndex: 2
+      }}></div>
 
       {/* NEW BROWSE PAGE LAYOUT */}
       <div className="browse-page-layout">

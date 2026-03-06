@@ -198,6 +198,35 @@ export default function SubmitPage() {
 
   return (
     <div className="submit-container">
+      {/* Glassmorphic background layers */}
+      <div className="landing-background"></div>
+      
+      {/* Gradient overlay - bottom dark to top transparent */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        background: 'linear-gradient(to top right, rgba(30, 37, 44, 0.98), rgba(144, 181, 216, 0.38), transparent)',
+        pointerEvents: 'none',
+        zIndex: 1
+      }}></div>
+      
+      {/* Glass overlay with backdrop blur - NO CUTOUTS */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(15px)',
+        background: 'rgba(255, 255, 255, 0.56)',
+        pointerEvents: 'none',
+        zIndex: 2
+      }}></div>
+      
       <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem' }}>
         <h1>Submit a Microproduct</h1>
         <Link href="/" className="home-btn">Home</Link>
