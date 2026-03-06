@@ -1,0 +1,200 @@
+/* Landing page flexbox layout */
+
+.landing-container {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-inter);
+}
+
+/* HIDE OLD ELEMENTS */
+.hero-hidden,
+.recent-hidden {
+  display: none !important;
+}
+
+/* NEW HERO PAGE LAYOUT - FLEXBOX APPROACH */
+.hero-page-layout {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-global-margin-vertical) 0;
+  gap: 0;
+}
+
+/* Classification marking - top center */
+.classification-marking {
+  position: fixed;
+  top: var(--spacing-classification-top);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  padding: 5px 15px;
+  border-radius: 8px;
+  font-family: var(--font-inter);
+  font-weight: var(--fw-extra-bold);
+  font-size: 16px;
+  color: var(--color-text);
+  opacity: 1;
+  text-transform: lowercase;
+  box-shadow: var(--shadow-inner);
+  backdrop-filter: blur(var(--blur-backdrop-small));
+}
+
+.classification-marking::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  border: 1px solid var(--color-text);
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+/* Vertical progress indicator - right rail */
+.progress-indicator {
+  position: fixed;
+  right: var(--spacing-progress-right);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-progress-gap);
+  z-index: 10;
+  align-items: center;
+}
+
+.progress-marker {
+  font-family: var(--font-inter);
+  font-weight: var(--fw-extra-bold);
+  font-size: 16px;
+  color: var(--color-text);
+  text-align: center;
+}
+
+.progress-marker.active {
+  opacity: var(--opacity-full);
+}
+
+.progress-marker.secondary {
+  opacity: var(--opacity-secondary);
+}
+
+.progress-marker.tertiary {
+  opacity: var(--opacity-tertiary);
+}
+
+.progress-marker.quaternary {
+  opacity: var(--opacity-quaternary);
+}
+
+/* Hero number - left side */
+.hero-number {
+  flex-grow: 1;
+  flex-shrink: 0;
+  font-family: var(--font-inter);
+  font-weight: var(--fw-extra-bold);
+  font-size: var(--fs-hero-number);
+  color: var(--color-text);
+  opacity: var(--opacity-hero);
+  z-index: 1;
+  padding-left: 100px;
+  text-align: right;
+}
+
+/* Flex spacer - grows to fill space between hero number and content */
+.flex-spacer {
+  flex-grow: 1;
+  min-width: 200px;
+}
+
+/* Main content block - right side */
+.main-content-block {
+  flex-grow: 2;
+  flex-shrink: 0;
+  max-width: 800px;
+  text-align: right;
+  z-index: 2;
+  padding-right: 100px;
+}
+
+.section-notice {
+  font-family: var(--font-inter);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-section-notice);
+  color: var(--color-text);
+  margin-bottom: 75px;
+}
+
+.main-heading {
+  font-family: var(--font-inter);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-main-heading);
+  color: var(--color-text);
+  line-height: auto;
+  margin-bottom: var(--spacing-sm);
+}
+
+.decorator-line {
+  width: 75px;
+  height: 2px;
+  background: var(--color-text);
+  margin-left: auto;
+  margin-bottom: 50px;
+}
+
+.meta-info {
+  font-family: var(--font-inter);
+  font-weight: var(--fw-light);
+  font-size: var(--fs-meta);
+  color: var(--color-text);
+  margin-bottom: var(--spacing-md);
+}
+
+.body-paragraph {
+  font-family: var(--font-inter);
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-body);
+  color: var(--color-text);
+  line-height: var(--lh-relaxed);
+}
+
+/* Bottom navigation - bottom center */
+.bottom-nav {
+  position: fixed;
+  bottom: var(--spacing-nav-bottom);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  z-index: 10;
+}
+
+.bottom-nav a {
+  font-family: var(--font-inter);
+  font-weight: var(--fw-light);
+  font-size: var(--fs-nav);
+  color: var(--color-text);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: all 200ms ease;
+  padding: 10px 0;
+  position: relative;
+}
+
+.bottom-nav a::before {
+  content: attr(data-text);
+  font-weight: var(--fw-bold);
+  height: 0;
+  visibility: hidden;
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
+  display: block;
+}
+
+.bottom-nav a:hover {
+  transform: translateY(-10px);
+  font-weight: var(--fw-bold);
+}

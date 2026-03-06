@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import './page.css';
 
 type Opportunity = {
   name: string;
@@ -62,12 +61,16 @@ export default function Home() {
 
   return (
     <div className="landing-container">
+      {/* Glassmorphic background layers */}
+      <div className="landing-background"></div>
+      <div className="glass-overlay"></div>
+
       {/* NEW HERO PAGE LAYOUT */}
       <div className="hero-page-layout">
         {/* Classification marking - top center */}
         <div className="classification-marking">unclassified / public</div>
 
-        {/* Vertical progress indicator - left rail */}
+        {/* Vertical progress indicator - right rail */}
         <div className="progress-indicator">
           <div className="progress-marker active">01</div>
           <div className="progress-marker secondary">02</div>
@@ -75,10 +78,13 @@ export default function Home() {
           <div className="progress-marker quaternary">04</div>
         </div>
 
-        {/* Hero number - left region */}
+        {/* Hero number - left side */}
         <div className="hero-number">01.</div>
 
-        {/* Main content block - right-aligned */}
+        {/* Flex spacer - grows to fill space */}
+        <div className="flex-spacer"></div>
+
+        {/* Main content block - right side */}
         <div className="main-content-block">
           <p className="section-notice">Ensure that all data and information submitted is unclassified and approved for public release as this is an open public portal.</p>
           <h1 className="main-heading">COSMIC Microproducts Portal</h1>
@@ -91,10 +97,18 @@ export default function Home() {
 
         {/* Bottom navigation - bottom right */}
         <nav className="bottom-nav">
-          <Link href="/">HOME</Link>
-          <Link href="/submit">SUBMIT PRODUCT</Link>
-          <Link href="/browse">BROWSE PRODUCTS</Link>
-          <a href="https://cosmicspace.org/news/" target="_blank" rel="noreferrer">NEWS</a>
+          <Link href="/" data-text="HOME">HOME</Link>
+          <Link href="/submit" data-text="SUBMIT PRODUCT">SUBMIT PRODUCT</Link>
+          <Link href="/browse" data-text="BROWSE PRODUCTS">BROWSE PRODUCTS</Link>
+          <a href="https://cosmicspace.org/news/" target="_blank" rel="noreferrer" data-text="NEWS">NEWS</a>
+          <a href="#" data-text="DEBUG" onClick={(e) => { 
+            e.preventDefault(); 
+            document.body.classList.toggle('debug-mode');
+            // Add width data attributes
+            document.querySelectorAll('.hero-number, .flex-spacer, .main-content-block, .table-container').forEach(el => {
+              el.setAttribute('data-width', `${el.offsetWidth}px`);
+            });
+          }}>DEBUG</a>
         </nav>
       </div>
 

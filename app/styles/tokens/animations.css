@@ -1,0 +1,60 @@
+:root {
+  --transition-duration: 400ms;
+  --transition-easing: ease-in-out;
+  --animation-evaporation: 400ms;
+  --animation-condensation: 400ms;
+}
+
+/* Evaporation: data clearing */
+@keyframes evaporate {
+  0% {
+    opacity: 1;
+    filter: blur(0) url(#turbulence-filter);
+  }
+  100% {
+    opacity: 0;
+    filter: blur(var(--blur-evaporation)) url(#turbulence-filter);
+  }
+}
+
+/* Condensation: data materialization */
+@keyframes condense {
+  0% {
+    opacity: 0;
+    filter: blur(var(--blur-evaporation)) url(#turbulence-filter);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0) url(#turbulence-filter);
+  }
+}
+
+/* Hero number cross-fade */
+@keyframes hero-fade-out {
+  from { opacity: var(--opacity-hero); }
+  to { opacity: 0; }
+}
+
+@keyframes hero-fade-in {
+  from { opacity: 0; }
+  to { opacity: var(--opacity-hero); }
+}
+
+/* Progress indicator transitions */
+.progress-marker {
+  transition: opacity var(--transition-duration) var(--transition-easing);
+}
+
+/* Animation classes */
+.evaporating {
+  animation: evaporate var(--animation-evaporation) ease-out forwards;
+}
+
+.condensing {
+  animation: condense var(--animation-condensation) ease-in forwards;
+}
+
+.hidden {
+  opacity: 0;
+  pointer-events: none;
+}

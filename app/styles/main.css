@@ -1,0 +1,13 @@
+/* Master import file for atomic CSS architecture */
+
+/* 1. Design tokens */
+@import "./tokens/index.css";
+
+/* 2. Base styles */
+@import "./base/index.css";
+
+/* 3. Components */
+@import "./components/index.css";
+
+/* 4. Layouts */
+@import "./layouts/index.css";

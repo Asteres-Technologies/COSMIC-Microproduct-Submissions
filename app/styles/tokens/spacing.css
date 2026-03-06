@@ -1,0 +1,19 @@
+:root {
+  /* Global margins */
+  --spacing-global-margin: 100px;
+  --spacing-global-margin-vertical: 50px;
+  
+  /* Component positioning */
+  --spacing-classification-top: 50px;
+  --spacing-progress-right: 25px;
+  --spacing-progress-gap: 10px;
+  --spacing-nav-bottom: 50px;
+  --spacing-nav-right: 100px;
+  
+  /* Internal spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+}

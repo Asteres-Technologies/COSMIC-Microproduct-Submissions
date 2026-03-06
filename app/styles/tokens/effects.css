@@ -1,0 +1,19 @@
+:root {
+  /* Opacity hierarchy */
+  --opacity-full: 1;
+  --opacity-glass: 0.75;
+  --opacity-secondary: 0.5;
+  --opacity-tertiary: 0.25;
+  --opacity-hero: 0.14;
+  --opacity-noise: 0.13;
+  --opacity-quaternary: 0.125;
+  
+  /* Blur effects */
+  --blur-glass: 75px;
+  --blur-backdrop-small: 2px;
+  --blur-evaporation: 20px;
+  
+  /* Shadows - using only black with opacity */
+  --shadow-inner: inset 0 4px 6.3px rgba(0, 0, 0, 0.13);
+  --shadow-button: 0 4px 6.3px rgba(0, 0, 0, 0.13);
+}

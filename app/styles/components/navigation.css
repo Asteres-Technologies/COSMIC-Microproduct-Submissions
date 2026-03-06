@@ -1,0 +1,47 @@
+.bottom-nav {
+  position: fixed;
+  bottom: var(--spacing-nav-bottom);
+  display: flex;
+  gap: var(--spacing-md);
+  z-index: 10;
+}
+
+.bottom-nav a {
+  font-family: var(--font-inter);
+  font-weight: var(--fw-light);
+  font-size: var(--fs-nav);
+  color: var(--color-text);
+  text-decoration: none;
+  transition: all 200ms ease;
+  padding: 10px 0;
+  position: relative;
+  display: inline-block;
+}
+
+/* Reserve space for bold text to prevent layout shift */
+.bottom-nav a::before {
+  content: attr(data-text);
+  font-weight: var(--fw-bold);
+  height: 0;
+  visibility: hidden;
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
+  display: block;
+}
+
+.bottom-nav a:hover {
+  transform: translateY(-10px);
+  font-weight: var(--fw-bold);
+}
+
+/* Landing page: right-aligned */
+.hero-page-layout .bottom-nav {
+  right: var(--spacing-nav-right);
+}
+
+/* Browse page: centered */
+.browse-page-layout .bottom-nav {
+  left: 50%;
+  transform: translateX(-50%);
+}

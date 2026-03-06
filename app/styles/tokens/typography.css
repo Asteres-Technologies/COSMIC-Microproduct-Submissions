@@ -1,0 +1,25 @@
+:root {
+  --font-inter: 'Inter', sans-serif;
+  
+  /* Font sizes */
+  --fs-hero-number: 160px;
+  --fs-main-heading: 24px;
+  --fs-body: 16px;
+  --fs-table-content: 14px;
+  --fs-section-notice: 12px;
+  --fs-nav: 12px;
+  --fs-meta: 11px;
+  --fs-button: 11px;
+  
+  /* Font weights */
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-bold: 700;
+  --fw-extra-bold: 800;
+  
+  /* Line heights */
+  --lh-auto: auto;
+  --lh-tight: 1.2;
+  --lh-normal: 1.4;
+  --lh-relaxed: 1.6;
+}

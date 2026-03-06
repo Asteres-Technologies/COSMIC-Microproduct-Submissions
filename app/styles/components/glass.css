@@ -1,0 +1,40 @@
+/* Fixed background layers */
+.landing-background,
+.browse-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: url('/satellite.jpg');
+  background-position: center-left;
+  background-size: cover;
+  transform: rotate(-30deg);
+  z-index: 0;
+}
+
+.glass-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  backdrop-filter: blur(var(--blur-glass));
+  background: var(--color-bg-glass);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.glass-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('/noise-texture.png');
+  background-blend-mode: screen;
+  opacity: var(--opacity-noise);
+}
+
+.glass-container {
+  position: relative;
+  z-index: 2;
+}

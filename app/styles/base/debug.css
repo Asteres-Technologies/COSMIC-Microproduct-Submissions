@@ -1,0 +1,104 @@
+/* Debug mode - red outlines for all elements */
+body.debug-mode * {
+  outline: 1px solid red !important;
+}
+
+/* Debug mode - visualize flexbox layout */
+body.debug-mode .hero-number {
+  background: rgba(255, 0, 0, 0.3) !important;
+}
+
+body.debug-mode .flex-spacer {
+  background: rgba(0, 255, 0, 0.3) !important;
+  min-height: 50px;
+}
+
+body.debug-mode .main-content-block {
+  background: rgba(0, 0, 255, 0.3) !important;
+}
+
+/* Debug mode - show layout info */
+body.debug-mode .hero-page-layout::before {
+  content: 'Flexbox: [Hero] [Spacer (flex-grow)] [Content 550px]';
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-family: monospace;
+  z-index: 99999;
+  pointer-events: none;
+  border: 1px solid white;
+}
+
+body.debug-mode .hero-number::after {
+  content: attr(data-width);
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-family: monospace;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+body.debug-mode .flex-spacer::after {
+  content: attr(data-width);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-family: monospace;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+body.debug-mode .main-content-block::after {
+  content: '550px | ' attr(data-width);
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-family: monospace;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+/* Debug mode - browse page table grid */
+body.debug-mode .table-row {
+  background-image: 
+    linear-gradient(to right, rgba(255, 0, 0, 0.1) 0%, rgba(255, 0, 0, 0.1) 33.33%, transparent 33.33%),
+    linear-gradient(to right, transparent 33.33%, rgba(0, 255, 0, 0.1) 33.33%, rgba(0, 255, 0, 0.1) 50%, transparent 50%),
+    linear-gradient(to right, transparent 50%, rgba(0, 0, 255, 0.1) 50%, rgba(0, 0, 255, 0.1) 66.66%, transparent 66.66%),
+    linear-gradient(to right, transparent 66.66%, rgba(255, 255, 0, 0.1) 66.66%, rgba(255, 255, 0, 0.1) 83.33%, transparent 83.33%),
+    linear-gradient(to right, transparent 83.33%, rgba(255, 0, 255, 0.1) 83.33%, rgba(255, 0, 255, 0.1) 100%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+body.debug-mode .table-container::before {
+  content: 'Table Grid: 2fr | 1fr | 1fr | 1fr | 1fr';
+  position: fixed;
+  top: 40px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-family: monospace;
+  z-index: 99999;
+  pointer-events: none;
+  border: 1px solid white;
+}

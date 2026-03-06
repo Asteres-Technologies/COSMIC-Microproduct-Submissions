@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import './browse.css';
 
 type Opportunity = {
   name: string;
@@ -115,6 +114,10 @@ export default function BrowsePage() {
 
   return (
     <div className="browse-container">
+      {/* Glassmorphic background layers */}
+      <div className="browse-background"></div>
+      <div className="glass-overlay"></div>
+
       {/* NEW BROWSE PAGE LAYOUT */}
       <div className="browse-page-layout">
         {/* Classification marking - top center */}
@@ -165,10 +168,18 @@ export default function BrowsePage() {
 
         {/* Bottom navigation - centered */}
         <nav className="bottom-nav">
-          <Link href="/">HOME</Link>
-          <Link href="/submit">SUBMIT PRODUCT</Link>
-          <Link href="/browse">BROWSE PRODUCTS</Link>
-          <a href="https://cosmicspace.org/news/" target="_blank" rel="noreferrer">NEWS</a>
+          <Link href="/" data-text="HOME">HOME</Link>
+          <Link href="/submit" data-text="SUBMIT PRODUCT">SUBMIT PRODUCT</Link>
+          <Link href="/browse" data-text="BROWSE PRODUCTS">BROWSE PRODUCTS</Link>
+          <a href="https://cosmicspace.org/news/" target="_blank" rel="noreferrer" data-text="NEWS">NEWS</a>
+          <a href="#" data-text="DEBUG" onClick={(e) => { 
+            e.preventDefault(); 
+            document.body.classList.toggle('debug-mode');
+            // Add width data attributes
+            document.querySelectorAll('.hero-number, .flex-spacer, .main-content-block, .table-container').forEach(el => {
+              el.setAttribute('data-width', `${el.offsetWidth}px`);
+            });
+          }}>DEBUG</a>
         </nav>
       </div>
 

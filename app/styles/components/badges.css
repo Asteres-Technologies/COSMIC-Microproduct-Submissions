@@ -1,0 +1,21 @@
+/* Monochromatic status badges - no color coding */
+.badge {
+  font-family: var(--font-inter);
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-meta);
+  color: var(--color-text);
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  text-transform: capitalize;
+  background: transparent;
+  border: 1px solid var(--color-text);
+}
+
+/* Status communicated through text content, not color */
+.badge.pending,
+.badge.approved,
+.badge.in-progress,
+.badge.completed {
+  color: var(--color-text);
+  background: transparent;
+}

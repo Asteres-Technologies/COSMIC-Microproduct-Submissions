@@ -1,0 +1,24 @@
+/* Base glass button - monochromatic */
+.btn-glass {
+  font-family: var(--font-inter);
+  font-weight: var(--fw-light);
+  font-size: var(--fs-button);
+  color: var(--color-text);
+  padding: 5px 25px;
+  border-radius: 33px;
+  border: 1px solid var(--color-text);
+  background: transparent;
+  box-shadow: var(--shadow-button);
+  transition: all var(--transition-duration) var(--transition-easing);
+  cursor: pointer;
+  opacity: var(--opacity-secondary);
+}
+
+.btn-glass:hover {
+  opacity: var(--opacity-full);
+}
+
+.btn-glass:active {
+  background: rgba(255, 255, 255, var(--opacity-hero));
+  box-shadow: var(--shadow-inner);
+}
