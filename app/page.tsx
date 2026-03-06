@@ -128,9 +128,9 @@ export default function Home() {
         left: 0,
         width: '100vw',
         height: '100vh',
-        backdropFilter: 'blur(10px)',
+        backdropFilter: 'blur(15px)',
         WebkitBackdropFilter: 'blur(10px)',
-        background: 'rgba(255, 255, 255, 0.1)',
+        background: 'rgba(255, 255, 255, 0.65)',
         maskImage: 'url(#glass-mask)',
         WebkitMaskImage: 'url(#glass-mask)',
         pointerEvents: 'none',
@@ -145,18 +145,28 @@ export default function Home() {
             left: 0,
             width: '100vw',
             height: '100vh',
-            zIndex: 2,
             pointerEvents: 'none',
             overflow: 'visible'
           }}
         >
           <defs>
-            {/* Inverted mask: white = visible glass, black = cutout holes */}
+            {/* Gradient stroke definition */}
+            <linearGradient id="hero-gradient-stroke" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#E7E7E7" stopOpacity="1" />
+              <stop offset="100%" stopColor="#E1E1E1" stopOpacity="0" />
+            </linearGradient>
+            
+            {/* Blur filter for cutout text */}
+            <filter id="cutout-blur">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="0.5" />
+            </filter>
+            
+            {/* Inverted mask: white = visible glass, dark gray = mostly transparent cutout with subtle tint */}
             <mask id="glass-mask">
               {/* White background = glass layer visible everywhere */}
               <rect x="0" y="0" width="100%" height="100%" fill="white" />
               
-              {/* Black text = cutout hole for hero number */}
+              {/* Dark gray text = mostly transparent cutout with 3% glass tint */}
               <text 
                 className="hero-text"
                 x="0" 
@@ -166,12 +176,13 @@ export default function Home() {
                 fontFamily="Inter, sans-serif"
                 fontWeight="800"
                 fontSize="160"
-                fill="black"
+                fill="#bebebe93"
+                filter="url(#cutout-blur)"
               >
                 01.
               </text>
               
-              {/* Black rect = cutout hole for classification */}
+              {/* Dark gray rect = mostly transparent cutout with 3% glass tint */}
               <rect 
                 className="classification-rect"
                 x="0" 
@@ -179,7 +190,8 @@ export default function Home() {
                 width="100" 
                 height="40"
                 rx="8"
-                fill="black"
+                fill="#8d8d8dff"
+                filter="url(#cutout-blur)"
               />
             </mask>
             
@@ -206,7 +218,7 @@ export default function Home() {
             </filter>
           </defs>
           
-          {/* Hero number with 14% overlay - NO FILTER */}
+          {/* Hero number with subtle white tint - makes it look carved into glass */}
           <text 
             className="hero-text"
             x="0" 
@@ -216,12 +228,14 @@ export default function Home() {
             fontFamily="Inter, sans-serif"
             fontWeight="800"
             fontSize="160"
-            fill="rgba(105, 106, 111, 0.14)"
+            fill="rgba(255, 255, 255, 0.08)"
+            stroke="url(#hero-gradient-stroke)"
+            strokeWidth="2"
           >
             01.
           </text>
           
-          {/* Classification rect with subtle overlay - NO FILTER */}
+          {/* Classification rect with subtle white tint */}
           <rect 
             className="classification-rect"
             x="0" 
@@ -229,7 +243,9 @@ export default function Home() {
             width="100" 
             height="40"
             rx="8"
-            fill="rgba(255, 255, 255, 0.05)"
+            fill="rgba(255, 255, 255, 0.03)"
+            stroke="url(#hero-gradient-stroke)"
+            strokeWidth="1"
           />
         </svg>
       </div>
