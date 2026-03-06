@@ -6,6 +6,19 @@
   font-family: var(--font-inter);
 }
 
+/* Glass overlay container with backdrop blur */
+.glass-overlay-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  pointer-events: none;
+  z-index: 2;
+}
+
 /* HIDE OLD ELEMENTS */
 .hero-hidden,
 .recent-hidden {
@@ -37,18 +50,6 @@
   color: var(--color-text);
   opacity: 1;
   text-transform: lowercase;
-  box-shadow: var(--shadow-inner);
-  backdrop-filter: blur(var(--blur-backdrop-small));
-}
-
-.classification-marking::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 8px;
-  border: 1px solid var(--color-text);
-  opacity: 0.25;
-  pointer-events: none;
 }
 
 /* Vertical progress indicator - right rail */

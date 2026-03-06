@@ -6,6 +6,19 @@
   font-family: var(--font-inter);
 }
 
+/* Glass overlay container with backdrop blur */
+.glass-overlay-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  pointer-events: none;
+  z-index: 2;
+}
+
 /* NEW BROWSE PAGE LAYOUT */
 .browse-page-layout {
   position: relative;
@@ -29,12 +42,10 @@
   border-radius: 8px;
   font-family: var(--font-inter);
   font-weight: var(--fw-extra-bold);
-  font-size: var(--fs-meta);
+  font-size: 16px;
   color: var(--color-text);
-  opacity: var(--opacity-hero);
+  opacity: 1;
   text-transform: lowercase;
-  box-shadow: var(--shadow-inner);
-  backdrop-filter: blur(var(--blur-backdrop-small));
 }
 
 /* Table container - centered with max-width */

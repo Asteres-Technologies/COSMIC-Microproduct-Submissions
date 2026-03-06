@@ -30,7 +30,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url('/noise-texture.png');
+  /* background-image: url('/noise-texture.png'); */
   background-blend-mode: screen;
   opacity: var(--opacity-noise);
 }

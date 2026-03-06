@@ -42,6 +42,50 @@ export default function BrowsePage() {
     return () => { mounted = false };
   }, []);
 
+  // SVG glass cutout effect for classification marking
+  useEffect(() => {
+    const updateSVGPositions = () => {
+      const svg = document.getElementById('glass-cutout-svg') as unknown as SVGSVGElement;
+      const classificationEl = document.querySelector('.classification-marking') as HTMLElement;
+      
+      if (!svg || !classificationEl) return;
+
+      // Get classification position
+      const classRect = classificationEl.getBoundingClientRect();
+
+      // Update SVG viewBox to cover entire viewport
+      svg.setAttribute('viewBox', `0 0 ${window.innerWidth} ${window.innerHeight}`);
+      svg.setAttribute('width', String(window.innerWidth));
+      svg.setAttribute('height', String(window.innerHeight));
+
+      // Update classification rect positions
+      const classRects = svg.querySelectorAll('.classification-rect');
+      classRects.forEach(rect => {
+        rect.setAttribute('x', String(classRect.left));
+        rect.setAttribute('y', String(classRect.top));
+        rect.setAttribute('width', String(classRect.width));
+        rect.setAttribute('height', String(classRect.height));
+      });
+
+      // Update filter region to cover entire viewport
+      const filter = svg.querySelector('#inner-shadow-filter');
+      if (filter) {
+        filter.setAttribute('x', '0');
+        filter.setAttribute('y', '0');
+        filter.setAttribute('width', String(window.innerWidth));
+        filter.setAttribute('height', String(window.innerHeight));
+      }
+    };
+
+    // Wait for fonts and initial layout
+    document.fonts.ready.then(() => {
+      setTimeout(updateSVGPositions, 100);
+    });
+
+    window.addEventListener('resize', updateSVGPositions);
+    return () => window.removeEventListener('resize', updateSVGPositions);
+  }, []);
+
   const startJoin = (filename: string) => {
     setJoinForms(prev => ({ ...prev, [filename]: { name: '', email: '' } }));
   };
@@ -116,7 +160,92 @@ export default function BrowsePage() {
     <div className="browse-container">
       {/* Glassmorphic background layers */}
       <div className="browse-background"></div>
-      <div className="glass-overlay"></div>
+      
+      {/* Glass overlay with backdrop blur */}
+      <div className="glass-overlay-container">
+        <svg 
+          id="glass-cutout-svg" 
+          xmlns="http://www.w3.org/2000/svg"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            zIndex: 2,
+            pointerEvents: 'none',
+            overflow: 'visible'
+          }}
+        >
+          <defs>
+            {/* Inverted mask: white = visible glass, black = cutout holes */}
+            <mask id="glass-mask">
+              {/* White background = glass layer visible everywhere */}
+              <rect x="0" y="0" width="100%" height="100%" fill="white" />
+              
+              {/* Black rect = cutout hole for classification */}
+              <rect 
+                className="classification-rect"
+                x="0" 
+                y="0" 
+                width="100" 
+                height="40"
+                rx="8"
+                fill="black"
+              />
+            </mask>
+            
+            {/* Inner shadow filter using feComposite "out" to prevent halo */}
+            <filter 
+              id="inner-shadow-filter" 
+              filterUnits="userSpaceOnUse"
+              x="0" 
+              y="0" 
+              width="100%" 
+              height="100%"
+            >
+              {/* Create shadow */}
+              <feGaussianBlur in="SourceAlpha" stdDeviation="10" result="blur" />
+              <feOffset in="blur" dx="0" dy="-12" result="offsetBlur" />
+              
+              {/* Composite "out" = shadow only INSIDE the shape, no external halo */}
+              <feComposite in="offsetBlur" in2="SourceAlpha" operator="out" result="innerShadow" />
+              
+              {/* Color the shadow */}
+              <feFlood floodColor="rgb(0, 0, 0)" result="shadowColor" />
+              <feComposite in="shadowColor" in2="innerShadow" operator="in" result="coloredShadow" />
+              
+              {/* Combine with original */}
+              <feMerge>
+                <feMergeNode in="coloredShadow" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          
+          {/* Glass layer with mask applied */}
+          <rect 
+            x="0" 
+            y="0" 
+            width="100%" 
+            height="100%" 
+            fill="rgba(255, 255, 255, 0.65)"
+            mask="url(#glass-mask)"
+          />
+          
+          {/* Classification rect with subtle overlay and inner shadow */}
+          <rect 
+            className="classification-rect"
+            x="0" 
+            y="0" 
+            width="100" 
+            height="40"
+            rx="8"
+            fill="rgba(255, 255, 255, 0.05)"
+            filter="url(#inner-shadow-filter)"
+          />
+        </svg>
+      </div>
 
       {/* NEW BROWSE PAGE LAYOUT */}
       <div className="browse-page-layout">

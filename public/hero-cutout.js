@@ -46,7 +46,7 @@
 
       // Pass 2: Cut out the text shape
       ctx.globalCompositeOperation = 'destination-out';
-      ctx.font = '800 320px Inter';
+      ctx.font = '800 160px Inter';
       ctx.textAlign = 'right';
       ctx.textBaseline = 'middle';
       ctx.fillText('01.', x, y);
@@ -57,20 +57,41 @@
       ctx.fillText('01.', x, y);
 
       // Pass 4: Draw styled text on top
-      // Drop shadow
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 4;
-      ctx.shadowBlur = 6.3;
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.13)';
+      ctx.globalCompositeOperation = 'source-over';
       
-      // Stroke (outline)
-      ctx.strokeStyle = 'rgba(231, 231, 231, 0.25)';
-      ctx.lineWidth = 1;
+      // Reset shadow for stroke
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.shadowBlur = 0;
+      
+      // Gradient stroke (top-left to bottom-right) - more visible
+      const gradient = ctx.createLinearGradient(x - 300, y - 150, x + 100, y + 150);
+      gradient.addColorStop(0, 'rgba(231, 231, 231, 1)');
+      gradient.addColorStop(1, 'rgba(225, 225, 225, 0)');
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = 2;
       ctx.strokeText('01.', x, y);
       
-      // Fill with gray
+      // Create inner shadow effect
+      // Step 1: Draw text as mask
       ctx.fillStyle = 'rgba(105, 106, 111, 0.14)';
       ctx.fillText('01.', x, y);
+      
+      // Step 2: Set composite to only draw inside existing pixels
+      ctx.globalCompositeOperation = 'source-atop';
+      
+      // Step 3: Draw shadow with offset (this creates the inner shadow from top)
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.13)';
+      ctx.fillText('01.', x, y - 4);
+      
+      // Reset
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.shadowBlur = 0;
     }
 
     // Initial draw
