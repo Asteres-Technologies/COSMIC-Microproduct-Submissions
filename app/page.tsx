@@ -192,26 +192,21 @@ export default function Home() {
               width="100%" 
               height="100%"
             >
+              {/* 1. Blur the shape */}
               <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur" />
-              <feOffset dx="0" dy="5" result="offsetBlur" />
-              <feComposite in="offsetBlur" in2="SourceAlpha" operator="out" result="shadowSliver" />
-              <feFlood floodColor="black" floodOpacity="0.6" result="shadowColor" />
-              <feComposite in="shadowColor" in2="shadowSliver" operator="in" result="finalShadow" />
-              <feComposite in="finalShadow" in2="SourceAlpha" operator="in" />
+              {/* 2. Shift it DOWN (Positive dy) */}
+              <feOffset dx="0" dy="6" result="offsetBlur" />
+              {/* 3. THE FIX: Clip the shadow so it ONLY shows inside the '01.' */}
+              {/* This removes everything you see 'outside' the lines */}
+              <feComposite in="offsetBlur" in2="SourceAlpha" operator="out" result="innerSliver" />
+              {/* 4. Final Color pass */}
+              <feFlood floodColor="black" floodOpacity="0.7" result="color" />
+              <feComposite in="color" in2="innerSliver" operator="in" result="shadow" />
+              <feComposite in="shadow" in2="SourceAlpha" operator="in" />
             </filter>
           </defs>
           
-          {/* Glass layer - NO backdrop-filter here, it's on the parent div now */}
-          <rect 
-            x="0" 
-            y="0" 
-            width="100%" 
-            height="100%" 
-            fill="rgba(255, 255, 255, 0.1)"
-            mask="url(#glass-mask)"
-          />
-          
-          {/* Hero number with 14% overlay and inner shadow */}
+          {/* Hero number with 14% overlay - NO FILTER */}
           <text 
             className="hero-text"
             x="0" 
@@ -222,12 +217,11 @@ export default function Home() {
             fontWeight="800"
             fontSize="160"
             fill="rgba(105, 106, 111, 0.14)"
-            filter="url(#inner-shadow-filter)"
           >
             01.
           </text>
           
-          {/* Classification rect with subtle overlay and inner shadow */}
+          {/* Classification rect with subtle overlay - NO FILTER */}
           <rect 
             className="classification-rect"
             x="0" 
@@ -236,7 +230,6 @@ export default function Home() {
             height="40"
             rx="8"
             fill="rgba(255, 255, 255, 0.05)"
-            filter="url(#inner-shadow-filter)"
           />
         </svg>
       </div>

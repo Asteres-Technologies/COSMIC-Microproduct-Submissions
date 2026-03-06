@@ -97,7 +97,8 @@
   font-weight: var(--fw-extra-bold);
   font-size: var(--fs-hero-number);
   color: var(--color-text);
-  opacity: var(--opacity-hero);
+  opacity: 0;
+  visibility: hidden;
   z-index: 3;
   padding-left: 100px;
   text-align: right;
