@@ -118,7 +118,10 @@ export default function Home() {
     .slice(0,5);
 
   return (
-    <div className="landing-container">
+    <div className="landing-container" style={{
+      // @ts-ignore
+      '--cutout-blur': `${HERO_CUTOUT_CONFIG.cutoutBlur}px`
+    }}>
       {/* Glassmorphic background layers */}
       <div className="landing-background"></div>
       

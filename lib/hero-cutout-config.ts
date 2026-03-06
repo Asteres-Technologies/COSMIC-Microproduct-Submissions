@@ -18,7 +18,7 @@ export const HERO_CUTOUT_CONFIG = {
   shadowOpacity: 0.8,      // Darkness (0-1)
   
   // Blur effect inside cutout
-  cutoutBlur: 3,
+  cutoutBlur: 2,
   
   // Mask fill color (controls cutout shape in mask)
   maskFill: '#3f3f3f50'
