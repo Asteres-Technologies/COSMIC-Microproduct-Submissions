@@ -23,4 +23,6 @@ body {
 html, body {
   background-image: none !important;
   background-repeat: no-repeat !important;
+  overflow: hidden;
+  height: 100vh;
 }

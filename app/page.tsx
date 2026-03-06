@@ -64,6 +64,7 @@ export default function Home() {
       {/* Glassmorphic background layers */}
       <div className="landing-background"></div>
       <div className="glass-overlay"></div>
+      <canvas id="hero-cutout-canvas" style={{ display: 'none' }}></canvas>
 
       {/* NEW HERO PAGE LAYOUT */}
       <div className="hero-page-layout">
@@ -106,7 +107,7 @@ export default function Home() {
             document.body.classList.toggle('debug-mode');
             // Add width data attributes
             document.querySelectorAll('.hero-number, .flex-spacer, .main-content-block, .table-container').forEach(el => {
-              el.setAttribute('data-width', `${el.offsetWidth}px`);
+              el.setAttribute('data-width', `${(el as HTMLElement).offsetWidth}px`);
             });
           }}>DEBUG</a>
         </nav>

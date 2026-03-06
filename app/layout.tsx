@@ -19,6 +19,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script src="/hero-cutout.js" defer></script>
+      </head>
       <body
         className={`${geistSans.variable} ${geistSans.variable} antialiased`}
       >
