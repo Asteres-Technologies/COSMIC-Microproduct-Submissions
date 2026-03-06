@@ -97,7 +97,7 @@
   font-size: var(--fs-hero-number);
   color: var(--color-text);
   opacity: var(--opacity-hero);
-  z-index: 1;
+  z-index: 3;
   padding-left: 100px;
   text-align: right;
 }

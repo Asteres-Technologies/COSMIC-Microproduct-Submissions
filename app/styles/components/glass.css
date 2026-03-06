@@ -6,10 +6,11 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-image: url('/satellite.jpg');
-  background-position: center-left;
-  background-size: cover;
-  transform: rotate(-30deg);
+  background-image: url('/satellite_image.png');
+  background-position: -30% 100%;
+  background-size: 65%;
+  background-repeat: no-repeat;
+  transform: rotate(30deg);
   z-index: 0;
 }
 
@@ -21,7 +22,7 @@
   height: 100vh;
   backdrop-filter: blur(var(--blur-glass));
   background: var(--color-bg-glass);
-  z-index: 1;
+  z-index: 2;
   pointer-events: none;
 }
 

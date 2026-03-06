@@ -4,6 +4,6 @@
   --color-text: #696A6F;
   
   /* Glass effects */
-  --color-bg-glass: rgba(255, 255, 255, 0.75);
+  --color-bg-glass: rgba(255, 255, 255, 0.50);
   --color-noise-overlay: rgba(255, 255, 255, 0.13);
 }

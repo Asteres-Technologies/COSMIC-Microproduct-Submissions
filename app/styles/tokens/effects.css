@@ -9,7 +9,7 @@
   --opacity-quaternary: 0.125;
   
   /* Blur effects */
-  --blur-glass: 75px;
+  --blur-glass: 15px;
   --blur-backdrop-small: 2px;
   --blur-evaporation: 20px;
   
