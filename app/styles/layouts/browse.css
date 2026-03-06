@@ -263,7 +263,20 @@
   color: var(--color-text);
   text-decoration: none;
   text-transform: uppercase;
-  transition: all 200ms ease;
+  transition: all 400ms ease-in-out;
+  padding: 10px 0;
+  position: relative;
+}
+
+.browse-page-layout .bottom-nav a::before {
+  content: attr(data-text);
+  font-weight: var(--fw-bold);
+  height: 0;
+  visibility: hidden;
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
+  display: block;
 }
 
 .browse-page-layout .bottom-nav a:hover {
