@@ -156,7 +156,13 @@ export default function BrowsePage() {
       return opps.sort((a, b) => {
         const durationA = a.parsed?.duration_weeks ?? 0;
         const durationB = b.parsed?.duration_weeks ?? 0;
-        return durationB - durationA; // Descending
+        if (durationA !== durationB) {
+          return durationB - durationA; // Descending by duration
+        }
+        // Secondary sort: alphabetical by title
+        const titleA = a.parsed?.title ?? a.name ?? '';
+        const titleB = b.parsed?.title ?? b.name ?? '';
+        return titleA.localeCompare(titleB);
       });
     }
     
@@ -164,7 +170,13 @@ export default function BrowsePage() {
       return opps.sort((a, b) => {
         const countA = a.parsed?.team_members ? (Array.isArray(a.parsed.team_members) ? a.parsed.team_members.length : a.parsed.team_members.split(/\r?\n/).length) : 0;
         const countB = b.parsed?.team_members ? (Array.isArray(b.parsed.team_members) ? b.parsed.team_members.length : b.parsed.team_members.split(/\r?\n/).length) : 0;
-        return countB - countA; // Descending
+        if (countA !== countB) {
+          return countB - countA; // Descending by member count
+        }
+        // Secondary sort: alphabetical by title
+        const titleA = a.parsed?.title ?? a.name ?? '';
+        const titleB = b.parsed?.title ?? b.name ?? '';
+        return titleA.localeCompare(titleB);
       });
     }
     

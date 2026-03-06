@@ -2,7 +2,8 @@
   position: fixed;
   bottom: var(--spacing-nav-bottom);
   display: flex;
-  gap: var(--spacing-md);
+  justify-content: center;
+  gap: 32px;
   z-index: 10;
 }
 
@@ -12,10 +13,10 @@
   font-size: var(--fs-nav);
   color: var(--color-text);
   text-decoration: none;
+  text-transform: uppercase;
   transition: all 400ms ease-in-out;
   padding: 10px 0;
   position: relative;
-  display: inline-block;
 }
 
 /* Reserve space for bold text to prevent layout shift */
@@ -35,9 +36,10 @@
   font-weight: var(--fw-bold);
 }
 
-/* Landing page: right-aligned */
+/* Landing page: centered */
 .hero-page-layout .bottom-nav {
-  right: var(--spacing-nav-right);
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /* Browse page: centered */
