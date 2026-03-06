@@ -252,45 +252,47 @@ export default function BrowsePage() {
         {/* Table container - centered */}
         <div className="table-container">
           {/* Page heading */}
-          <h1 className="browse-heading">Browse Microproducts</h1>
+          {!loading && <h1 className="browse-heading">Browse Microproducts</h1>}
           
           {/* Filter bar */}
-          <div className="filter-bar">
-            <div className={`filter-pills ${filtersVisible ? 'visible' : ''}`}>
+          {!loading && (
+            <div className="filter-bar">
+              <div className={`filter-pills ${filtersVisible ? 'visible' : ''}`}>
+                <button 
+                  className={`filter-pill ${activeFilter === 'length' ? 'active' : ''}`}
+                  onClick={() => handleFilterClick('length')}
+                >
+                  project length
+                </button>
+                <button 
+                  className={`filter-pill ${activeFilter === 'members' ? 'active' : ''}`}
+                  onClick={() => handleFilterClick('members')}
+                >
+                  members
+                </button>
+                <button 
+                  className={`filter-pill ${activeFilter === 'status' ? 'active' : ''}`}
+                  onClick={() => handleFilterClick('status')}
+                >
+                  status
+                </button>
+              </div>
+              
               <button 
-                className={`filter-pill ${activeFilter === 'length' ? 'active' : ''}`}
-                onClick={() => handleFilterClick('length')}
+                className="filter-trigger"
+                onClick={() => setFiltersVisible(!filtersVisible)}
               >
-                project length
-              </button>
-              <button 
-                className={`filter-pill ${activeFilter === 'members' ? 'active' : ''}`}
-                onClick={() => handleFilterClick('members')}
-              >
-                members
-              </button>
-              <button 
-                className={`filter-pill ${activeFilter === 'status' ? 'active' : ''}`}
-                onClick={() => handleFilterClick('status')}
-              >
-                status
+                <svg width="7" height="7" viewBox="0 0 7 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="7" height="1" fill="#696A6F"/>
+                  <rect y="3" width="5" height="1" fill="#696A6F"/>
+                  <rect y="6" width="3" height="1" fill="#696A6F"/>
+                </svg>
+                <span>filters</span>
               </button>
             </div>
-            
-            <button 
-              className="filter-trigger"
-              onClick={() => setFiltersVisible(!filtersVisible)}
-            >
-              <svg width="7" height="7" viewBox="0 0 7 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="7" height="1" fill="#696A6F"/>
-                <rect y="3" width="5" height="1" fill="#696A6F"/>
-                <rect y="6" width="3" height="1" fill="#696A6F"/>
-              </svg>
-              <span>filters</span>
-            </button>
-          </div>
+          )}
           
-          {loading && <div>Loading...</div>}
+          {loading && <div className="loading-indicator">Loading...</div>}
           
           {!loading && opportunities.length === 0 && (
             <div>No opportunities found.</div>

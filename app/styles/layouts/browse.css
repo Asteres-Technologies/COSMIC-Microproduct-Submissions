@@ -70,6 +70,16 @@
   text-align: center;
 }
 
+/* Loading indicator - centered */
+.loading-indicator {
+  font-family: var(--font-inter);
+  font-weight: var(--fw-regular);
+  font-size: 14px;
+  color: var(--color-text);
+  text-align: center;
+  padding: var(--spacing-lg) 0;
+}
+
 /* Filter bar - right-aligned above table */
 .filter-bar {
   display: flex;
