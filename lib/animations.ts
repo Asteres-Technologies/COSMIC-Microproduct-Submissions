@@ -57,3 +57,26 @@ export function getAnimationStyle(state: AnimationState): React.CSSProperties {
     opacity: 1,
   };
 }
+
+// Get hero number animation CSS properties (blur + opacity for depth effect)
+export function getHeroNumberAnimationStyle(state: AnimationState): React.CSSProperties {
+  if (state === 'hiding') {
+    return {
+      animation: `hero-number-hide ${ANIMATION_DURATION}ms ease-in-out forwards`,
+    };
+  }
+  
+  if (state === 'showing') {
+    return {
+      animation: `hero-number-show ${ANIMATION_DURATION}ms ease-in-out forwards`,
+      filter: 'blur(1000px)',
+      opacity: 0, // Start hidden and blurred until animation begins
+    };
+  }
+  
+  // idle state
+  return {
+    filter: 'blur(0px)',
+    opacity: 1,
+  };
+}

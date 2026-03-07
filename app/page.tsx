@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { HERO_CUTOUT_CONFIG } from '@/lib/hero-cutout-config';
 import { sections } from '@/lib/sections-loader';
-import { AnimationState, getAnimationStyle, ANIMATION_DURATION } from '@/lib/animations';
+import { AnimationState, getAnimationStyle, getHeroNumberAnimationStyle, ANIMATION_DURATION } from '@/lib/animations';
 
 type Opportunity = {
   name: string;
@@ -17,6 +17,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [currentSection, setCurrentSection] = useState(1);
   const [contentAnimationState, setContentAnimationState] = useState<AnimationState>('idle');
+  const [heroNumberAnimationState, setHeroNumberAnimationState] = useState<AnimationState>('idle');
 
   useEffect(() => {
     let mounted = true;
@@ -53,17 +54,20 @@ export default function Home() {
       const changeSection = (newSection: number) => {
         isTransitioning = true;
         
-        // Start hide animation
+        // Start hide animation for both content and hero number
         setContentAnimationState('hiding');
+        setHeroNumberAnimationState('hiding');
         
         // After hide animation completes, change section and show
         setTimeout(() => {
           setCurrentSection(newSection);
           setContentAnimationState('showing');
+          setHeroNumberAnimationState('showing');
           
           // Reset to idle after show animation completes
           setTimeout(() => {
             setContentAnimationState('idle');
+            setHeroNumberAnimationState('idle');
             isTransitioning = false;
           }, ANIMATION_DURATION);
         }, ANIMATION_DURATION);
@@ -213,6 +217,28 @@ export default function Home() {
             opacity: 1;
           }
         }
+
+        @keyframes hero-number-hide {
+          0% {
+            filter: blur(0px);
+            opacity: 1;
+          }
+          100% {
+            filter: blur(1000px);
+            opacity: 0;
+          }
+        }
+
+        @keyframes hero-number-show {
+          0% {
+            filter: blur(1000px);
+            opacity: 0;
+          }
+          100% {
+            filter: blur(0px);
+            opacity: 1;
+          }
+        }
       `}</style>
       
       <div className="landing-container" style={{
@@ -281,7 +307,8 @@ export default function Home() {
                 fontFamily="Inter, sans-serif"
                 fontWeight="800"
                 fontSize={HERO_CUTOUT_CONFIG.fontSize}
-                fill={HERO_CUTOUT_CONFIG.maskFill} 
+                fill={HERO_CUTOUT_CONFIG.maskFill}
+                style={getHeroNumberAnimationStyle(heroNumberAnimationState)}
               >
                 {currentSection < 10 ? `0${currentSection}.` : `${currentSection}.`}
               </text>
@@ -293,6 +320,7 @@ export default function Home() {
                 height="40"
                 rx="8"
                 fill="#333333"
+                style={getHeroNumberAnimationStyle(heroNumberAnimationState)}
               />
             </mask>
           </defs>
@@ -310,7 +338,7 @@ export default function Home() {
             fill={HERO_CUTOUT_CONFIG.fillColor}
             stroke="url(#hero-gradient-stroke)"
             strokeWidth={HERO_CUTOUT_CONFIG.strokeWidth}
-            style={{ transition: 'opacity 400ms ease-in-out' }}
+            style={getHeroNumberAnimationStyle(heroNumberAnimationState)}
           >
             {currentSection < 10 ? `0${currentSection}.` : `${currentSection}.`}
           </text>
@@ -326,6 +354,7 @@ export default function Home() {
             fill="rgba(255, 255, 255, 0.03)"
             stroke="url(#hero-gradient-stroke)"
             strokeWidth="2"
+            style={getHeroNumberAnimationStyle(heroNumberAnimationState)}
           />
         </svg>
       </div>
@@ -349,7 +378,7 @@ export default function Home() {
             );
           })}
         </div>
-        <div className="hero-number">{currentSection < 10 ? `0${currentSection}.` : `${currentSection}.`}</div>
+        <div className="hero-number" style={getHeroNumberAnimationStyle(heroNumberAnimationState)}>{currentSection < 10 ? `0${currentSection}.` : `${currentSection}.`}</div>
         <div className="flex-spacer"></div>
         <div className="main-content-block" style={getAnimationStyle(contentAnimationState)}>
           <p className="section-notice">{currentContent.notice}</p>
