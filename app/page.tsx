@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { HERO_CUTOUT_CONFIG } from '@/lib/hero-cutout-config';
 import { sections } from '@/lib/sections-loader';
+import { AnimationState, getAnimationStyle, ANIMATION_DURATION } from '@/lib/animations';
 
 type Opportunity = {
   name: string;
@@ -15,6 +16,7 @@ export default function Home() {
   const [opps, setOpps] = useState<Opportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentSection, setCurrentSection] = useState(1);
+  const [contentAnimationState, setContentAnimationState] = useState<AnimationState>('idle');
 
   useEffect(() => {
     let mounted = true;
@@ -48,19 +50,36 @@ export default function Home() {
 
       scrollAccumulator += e.deltaY;
 
+      const changeSection = (newSection: number) => {
+        isTransitioning = true;
+        
+        // Start hide animation
+        setContentAnimationState('hiding');
+        
+        // After hide animation completes, change section and show
+        setTimeout(() => {
+          setCurrentSection(newSection);
+          setContentAnimationState('showing');
+          
+          // Reset to idle after show animation completes
+          setTimeout(() => {
+            setContentAnimationState('idle');
+            isTransitioning = false;
+          }, ANIMATION_DURATION);
+        }, ANIMATION_DURATION);
+        
+        scrollAccumulator = 0;
+      };
+
       // Scroll down - next section (loops back to 1 after last section)
       if (scrollAccumulator > threshold) {
-        isTransitioning = true;
-        setCurrentSection(prev => prev === totalSections ? 1 : prev + 1);
-        scrollAccumulator = 0;
-        setTimeout(() => { isTransitioning = false; }, 600);
+        const newSection = currentSection === totalSections ? 1 : currentSection + 1;
+        changeSection(newSection);
       }
       // Scroll up - previous section (loops back to last section from 1)
       else if (scrollAccumulator < -threshold) {
-        isTransitioning = true;
-        setCurrentSection(prev => prev === 1 ? totalSections : prev - 1);
-        scrollAccumulator = 0;
-        setTimeout(() => { isTransitioning = false; }, 600);
+        const newSection = currentSection === 1 ? totalSections : currentSection - 1;
+        changeSection(newSection);
       }
     };
 
@@ -162,10 +181,44 @@ export default function Home() {
   const currentContent = sections[currentSection - 1];
 
   return (
-    <div className="landing-container" style={{
-      // @ts-ignore
-      '--cutout-blur': `${HERO_CUTOUT_CONFIG.cutoutBlur}px`
-    }}>
+    <>
+      {/* Inject animation keyframes */}
+      <style jsx global>{`
+        @keyframes content-hide {
+          0% {
+            filter: blur(0px);
+            opacity: 1;
+          }
+          95% {
+            filter: blur(1000px);
+            opacity: 1;
+          }
+          100% {
+            filter: blur(1000px);
+            opacity: 0;
+          }
+        }
+
+        @keyframes content-show {
+          0% {
+            filter: blur(1000px);
+            opacity: 0;
+          }
+          5% {
+            filter: blur(1000px);
+            opacity: 1;
+          }
+          100% {
+            filter: blur(0px);
+            opacity: 1;
+          }
+        }
+      `}</style>
+      
+      <div className="landing-container" style={{
+        // @ts-ignore
+        '--cutout-blur': `${HERO_CUTOUT_CONFIG.cutoutBlur}px`
+      }}>
       {/* Glassmorphic background layers */}
       <div className="landing-background"></div>
       
@@ -298,7 +351,7 @@ export default function Home() {
         </div>
         <div className="hero-number">{currentSection < 10 ? `0${currentSection}.` : `${currentSection}.`}</div>
         <div className="flex-spacer"></div>
-        <div className="main-content-block" style={{ transition: 'opacity 400ms ease-in-out' }}>
+        <div className="main-content-block" style={getAnimationStyle(contentAnimationState)}>
           <p className="section-notice">{currentContent.notice}</p>
           <h1 className="main-heading">{currentContent.heading}</h1>
           <div className="decorator-line"></div>
@@ -380,5 +433,6 @@ export default function Home() {
         </ul>
       </section>
     </div>
+    </>
   );
 }
