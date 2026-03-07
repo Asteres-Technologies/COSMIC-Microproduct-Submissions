@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { HERO_CUTOUT_CONFIG } from '@/lib/hero-cutout-config';
+import { sections } from '@/lib/sections-loader';
 
 type Opportunity = {
   name: string;
@@ -35,9 +36,11 @@ export default function Home() {
   }, []);
 
   // Wheel-based section navigation (no actual page scroll)
+  // Dynamically handles any number of sections based on files in content/sections/
   useEffect(() => {
+    const totalSections = sections.length;
     let scrollAccumulator = 0;
-    const threshold = 300; // Amount of wheel delta needed to change sections (reduced from 800)
+    const threshold = 300; // Amount of wheel delta needed to change sections
     let isTransitioning = false;
 
     const handleWheel = (e: WheelEvent) => {
@@ -45,17 +48,17 @@ export default function Home() {
 
       scrollAccumulator += e.deltaY;
 
-      // Scroll down - next section (loops back to 1 after 4)
+      // Scroll down - next section (loops back to 1 after last section)
       if (scrollAccumulator > threshold) {
         isTransitioning = true;
-        setCurrentSection(prev => prev === 4 ? 1 : prev + 1);
+        setCurrentSection(prev => prev === totalSections ? 1 : prev + 1);
         scrollAccumulator = 0;
         setTimeout(() => { isTransitioning = false; }, 600);
       }
-      // Scroll up - previous section (loops back to 4 from 1)
+      // Scroll up - previous section (loops back to last section from 1)
       else if (scrollAccumulator < -threshold) {
         isTransitioning = true;
-        setCurrentSection(prev => prev === 1 ? 4 : prev - 1);
+        setCurrentSection(prev => prev === 1 ? totalSections : prev - 1);
         scrollAccumulator = 0;
         setTimeout(() => { isTransitioning = false; }, 600);
       }
@@ -63,7 +66,7 @@ export default function Home() {
 
     window.addEventListener('wheel', handleWheel, { passive: true });
     return () => window.removeEventListener('wheel', handleWheel);
-  }, [currentSection]);
+  }, [currentSection, sections.length]);
 
   // SVG glass cutout effect with responsive positioning
   useEffect(() => {
@@ -156,34 +159,6 @@ export default function Home() {
     .sort((a,b) => b.date.getTime() - a.date.getTime())
     .slice(0,5);
 
-  // Section content definitions
-  const sections = [
-    {
-      notice: "Ensure that all data and information submitted is unclassified and approved for public release as this is an open public portal.",
-      heading: "COSMIC Microproducts Portal",
-      meta: "A lightweight approach to delivering focused, time-boxed products for the space community",
-      body: "This portal helps COSMIC members propose, track, and showcase small, time‑boxed projects. Design a clearly scoped microproduct (2–12 weeks), assemble a small team or go solo, then use the submission form to propose your idea and the browse page to find, follow, or join existing microproducts."
-    },
-    {
-      notice: "Section 02 - What is a Microproduct?",
-      heading: "Focused Deliverables",
-      meta: "Small, time-boxed projects with clear scope and outcomes",
-      body: "A microproduct is a focused deliverable with a clearly defined scope. Microproducts typically run for two to twelve weeks. Each microproduct is owned and led by an individual or a small team. Microproducts can start without broad consensus."
-    },
-    {
-      notice: "Section 03 - How It Works",
-      heading: "Lightweight Process",
-      meta: "Rapid insights through small, low-commitment tasks",
-      body: "They are lightweight efforts for rapid insights. Work is broken into small, low-commitment tasks that volunteers can pick up. Every microproduct has a clear leader responsible for delivery and coordination."
-    },
-    {
-      notice: "Section 04 - Get Started",
-      heading: "Join or Submit",
-      meta: "Browse existing projects or propose your own",
-      body: "Ready to get involved? Browse current opportunities to join existing teams, or submit your own microproduct proposal. The portal makes it easy to collaborate and deliver focused results for the space community."
-    }
-  ];
-
   const currentContent = sections[currentSection - 1];
 
   return (
@@ -255,7 +230,7 @@ export default function Home() {
                 fontSize={HERO_CUTOUT_CONFIG.fontSize}
                 fill={HERO_CUTOUT_CONFIG.maskFill} 
               >
-                {`0${currentSection}.`}
+                {currentSection < 10 ? `0${currentSection}.` : `${currentSection}.`}
               </text>
               <rect 
                 className="classification-rect"
@@ -284,7 +259,7 @@ export default function Home() {
             strokeWidth={HERO_CUTOUT_CONFIG.strokeWidth}
             style={{ transition: 'opacity 400ms ease-in-out' }}
           >
-            {`0${currentSection}.`}
+            {currentSection < 10 ? `0${currentSection}.` : `${currentSection}.`}
           </text>
           
           {/* Classification rect with white tint and gradient stroke */}
@@ -307,19 +282,21 @@ export default function Home() {
         <div className="classification-marking">unclassified / public</div>
         <div className="progress-indicator">
           {/* Show 5 positions: 2 above, active center, 2 below */}
+          {/* Dynamically calculates section numbers based on total sections */}
           {[-2, -1, 0, 1, 2].map((offset) => {
-            const sectionNum = ((currentSection - 1 + offset + 4) % 4) + 1;
+            const totalSections = sections.length;
+            const sectionNum = ((currentSection - 1 + offset + totalSections) % totalSections) + 1;
             const absOffset = Math.abs(offset);
             const opacityClass = absOffset === 0 ? 'active' : absOffset === 1 ? 'secondary' : 'tertiary';
             
             return (
               <div key={offset} className={`progress-marker ${opacityClass}`}>
-                {`0${sectionNum}`}
+                {sectionNum < 10 ? `0${sectionNum}` : sectionNum}
               </div>
             );
           })}
         </div>
-        <div className="hero-number">{`0${currentSection}.`}</div>
+        <div className="hero-number">{currentSection < 10 ? `0${currentSection}.` : `${currentSection}.`}</div>
         <div className="flex-spacer"></div>
         <div className="main-content-block" style={{ transition: 'opacity 400ms ease-in-out' }}>
           <p className="section-notice">{currentContent.notice}</p>

@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "npm run generate-sections && next dev",
+    "build": "npm run generate-sections && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "generate-sections": "node scripts/generate-sections.js"
   },
   "dependencies": {
     "@octokit/rest": "^22.0.1",
