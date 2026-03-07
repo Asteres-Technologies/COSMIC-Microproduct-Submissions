@@ -13,6 +13,7 @@ type Opportunity = {
 export default function Home() {
   const [opps, setOpps] = useState<Opportunity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentSection, setCurrentSection] = useState(1);
 
   useEffect(() => {
     let mounted = true;
@@ -32,6 +33,37 @@ export default function Home() {
     load();
     return () => { mounted = false };
   }, []);
+
+  // Wheel-based section navigation (no actual page scroll)
+  useEffect(() => {
+    let scrollAccumulator = 0;
+    const threshold = 300; // Amount of wheel delta needed to change sections (reduced from 800)
+    let isTransitioning = false;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (isTransitioning) return;
+
+      scrollAccumulator += e.deltaY;
+
+      // Scroll down - next section (loops back to 1 after 4)
+      if (scrollAccumulator > threshold) {
+        isTransitioning = true;
+        setCurrentSection(prev => prev === 4 ? 1 : prev + 1);
+        scrollAccumulator = 0;
+        setTimeout(() => { isTransitioning = false; }, 600);
+      }
+      // Scroll up - previous section (loops back to 4 from 1)
+      else if (scrollAccumulator < -threshold) {
+        isTransitioning = true;
+        setCurrentSection(prev => prev === 1 ? 4 : prev - 1);
+        scrollAccumulator = 0;
+        setTimeout(() => { isTransitioning = false; }, 600);
+      }
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: true });
+    return () => window.removeEventListener('wheel', handleWheel);
+  }, [currentSection]);
 
   // SVG glass cutout effect with responsive positioning
   useEffect(() => {
@@ -124,6 +156,36 @@ export default function Home() {
     .sort((a,b) => b.date.getTime() - a.date.getTime())
     .slice(0,5);
 
+  // Section content definitions
+  const sections = [
+    {
+      notice: "Ensure that all data and information submitted is unclassified and approved for public release as this is an open public portal.",
+      heading: "COSMIC Microproducts Portal",
+      meta: "A lightweight approach to delivering focused, time-boxed products for the space community",
+      body: "This portal helps COSMIC members propose, track, and showcase small, time‑boxed projects. Design a clearly scoped microproduct (2–12 weeks), assemble a small team or go solo, then use the submission form to propose your idea and the browse page to find, follow, or join existing microproducts."
+    },
+    {
+      notice: "Section 02 - What is a Microproduct?",
+      heading: "Focused Deliverables",
+      meta: "Small, time-boxed projects with clear scope and outcomes",
+      body: "A microproduct is a focused deliverable with a clearly defined scope. Microproducts typically run for two to twelve weeks. Each microproduct is owned and led by an individual or a small team. Microproducts can start without broad consensus."
+    },
+    {
+      notice: "Section 03 - How It Works",
+      heading: "Lightweight Process",
+      meta: "Rapid insights through small, low-commitment tasks",
+      body: "They are lightweight efforts for rapid insights. Work is broken into small, low-commitment tasks that volunteers can pick up. Every microproduct has a clear leader responsible for delivery and coordination."
+    },
+    {
+      notice: "Section 04 - Get Started",
+      heading: "Join or Submit",
+      meta: "Browse existing projects or propose your own",
+      body: "Ready to get involved? Browse current opportunities to join existing teams, or submit your own microproduct proposal. The portal makes it easy to collaborate and deliver focused results for the space community."
+    }
+  ];
+
+  const currentContent = sections[currentSection - 1];
+
   return (
     <div className="landing-container" style={{
       // @ts-ignore
@@ -193,7 +255,7 @@ export default function Home() {
                 fontSize={HERO_CUTOUT_CONFIG.fontSize}
                 fill={HERO_CUTOUT_CONFIG.maskFill} 
               >
-                01.
+                {`0${currentSection}.`}
               </text>
               <rect 
                 className="classification-rect"
@@ -220,8 +282,9 @@ export default function Home() {
             fill={HERO_CUTOUT_CONFIG.fillColor}
             stroke="url(#hero-gradient-stroke)"
             strokeWidth={HERO_CUTOUT_CONFIG.strokeWidth}
+            style={{ transition: 'opacity 400ms ease-in-out' }}
           >
-            01.
+            {`0${currentSection}.`}
           </text>
           
           {/* Classification rect with white tint and gradient stroke */}
@@ -243,20 +306,28 @@ export default function Home() {
       <div className="hero-page-layout">
         <div className="classification-marking">unclassified / public</div>
         <div className="progress-indicator">
-          <div className="progress-marker active">01</div>
-          <div className="progress-marker secondary">02</div>
-          <div className="progress-marker tertiary">03</div>
-          <div className="progress-marker quaternary">04</div>
+          {/* Show 5 positions: 2 above, active center, 2 below */}
+          {[-2, -1, 0, 1, 2].map((offset) => {
+            const sectionNum = ((currentSection - 1 + offset + 4) % 4) + 1;
+            const absOffset = Math.abs(offset);
+            const opacityClass = absOffset === 0 ? 'active' : absOffset === 1 ? 'secondary' : 'tertiary';
+            
+            return (
+              <div key={offset} className={`progress-marker ${opacityClass}`}>
+                {`0${sectionNum}`}
+              </div>
+            );
+          })}
         </div>
-        <div className="hero-number">01.</div>
+        <div className="hero-number">{`0${currentSection}.`}</div>
         <div className="flex-spacer"></div>
-        <div className="main-content-block">
-          <p className="section-notice">Ensure that all data and information submitted is unclassified and approved for public release as this is an open public portal.</p>
-          <h1 className="main-heading">COSMIC Microproducts Portal</h1>
+        <div className="main-content-block" style={{ transition: 'opacity 400ms ease-in-out' }}>
+          <p className="section-notice">{currentContent.notice}</p>
+          <h1 className="main-heading">{currentContent.heading}</h1>
           <div className="decorator-line"></div>
-          <p className="meta-info">A lightweight approach to delivering focused, time-boxed products for the space community</p>
+          <p className="meta-info">{currentContent.meta}</p>
           <p className="body-paragraph">
-            This portal helps COSMIC members propose, track, and showcase small, time‑boxed projects. Design a clearly scoped microproduct (2–12 weeks), assemble a small team or go solo, then use the submission form to propose your idea and the browse page to find, follow, or join existing microproducts.
+            {currentContent.body}
           </p>
         </div>
         <nav className="bottom-nav">

@@ -27,21 +27,25 @@
 
 /* NEW HERO PAGE LAYOUT - FLEXBOX APPROACH */
 .hero-page-layout {
-  position: relative;
-  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   align-items: center;
   padding: var(--spacing-global-margin-vertical) 0;
   gap: 0;
+  z-index: 3;
 }
 
 /* Classification marking - top center */
 .classification-marking {
   position: fixed;
-  top: var(--spacing-classification-top);
+  top: 50px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 10;
+  z-index: 100;
   padding: 5px 15px;
   border-radius: 8px;
   font-family: var(--font-inter);
@@ -55,13 +59,13 @@
 /* Vertical progress indicator - right rail */
 .progress-indicator {
   position: fixed;
-  right: var(--spacing-progress-right);
+  right: 25px;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-progress-gap);
-  z-index: 10;
+  gap: 10px;
+  z-index: 100;
   align-items: center;
 }
 
@@ -71,22 +75,19 @@
   font-size: 16px;
   color: var(--color-text);
   text-align: center;
+  transition: opacity 400ms ease-in-out;
 }
 
 .progress-marker.active {
-  opacity: var(--opacity-full);
+  opacity: 1;
 }
 
 .progress-marker.secondary {
-  opacity: var(--opacity-secondary);
+  opacity: 0.5;
 }
 
 .progress-marker.tertiary {
-  opacity: var(--opacity-tertiary);
-}
-
-.progress-marker.quaternary {
-  opacity: var(--opacity-quaternary);
+  opacity: 0.25;
 }
 
 /* Hero number - left side */
