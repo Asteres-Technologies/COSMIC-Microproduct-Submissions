@@ -1,10 +1,11 @@
 "use client"
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { HERO_CUTOUT_CONFIG } from '@/lib/hero-cutout-config';
 import { sections } from '@/lib/sections-loader';
 import { AnimationState, getAnimationStyle, getHeroNumberAnimationStyle, ANIMATION_DURATION } from '@/lib/animations';
+import { SmokeEffect } from '@/lib/smoke-effect';
 
 type Opportunity = {
   name: string;
@@ -18,6 +19,9 @@ export default function Home() {
   const [currentSection, setCurrentSection] = useState(1);
   const [contentAnimationState, setContentAnimationState] = useState<AnimationState>('idle');
   const [heroNumberAnimationState, setHeroNumberAnimationState] = useState<AnimationState>('idle');
+  
+  const smokeCanvasRef = useRef<HTMLCanvasElement>(null);
+  const smokeEffectRef = useRef<SmokeEffect | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -38,6 +42,13 @@ export default function Home() {
     return () => { mounted = false };
   }, []);
 
+  // Initialize smoke effect
+  useEffect(() => {
+    if (smokeCanvasRef.current && !smokeEffectRef.current) {
+      smokeEffectRef.current = new SmokeEffect(smokeCanvasRef.current);
+    }
+  }, []);
+
   // Wheel-based section navigation (no actual page scroll)
   // Dynamically handles any number of sections based on files in content/sections/
   useEffect(() => {
@@ -54,15 +65,69 @@ export default function Home() {
       const changeSection = (newSection: number) => {
         isTransitioning = true;
         
+        // Get content elements for smoke effect
+        const contentBlock = document.querySelector('.main-content-block');
+        const noticeEl = document.querySelector('.section-notice') as HTMLElement;
+        const headingEl = document.querySelector('.main-heading') as HTMLElement;
+        const metaEl = document.querySelector('.meta-info') as HTMLElement;
+        const heroNumberEl = document.querySelector('.hero-number') as HTMLElement;
+        
+        // Start smoke effect on key content elements only (skip body for performance)
+        if (smokeEffectRef.current && contentBlock) {
+          const content = sections[currentSection - 1];
+          
+          // Initialize with first element - use more precise Y positioning
+          if (noticeEl) {
+            const rect = noticeEl.getBoundingClientRect();
+            // Use top + half height for vertical center, matching textBaseline: 'middle'
+            smokeEffectRef.current.initFromText(content.notice, rect.right, rect.top + (rect.height * 0.5), 11, 'bold');
+          }
+          
+          // Add particles for other elements
+          if (headingEl) {
+            const rect = headingEl.getBoundingClientRect();
+            smokeEffectRef.current.addTextCharacters(content.heading, rect.right, rect.top + (rect.height * 0.5), 24, 'bold');
+          }
+          if (metaEl) {
+            const rect = metaEl.getBoundingClientRect();
+            smokeEffectRef.current.addTextCharacters(content.meta, rect.right, rect.top + (rect.height * 0.5), 11, '300');
+          }
+          
+          smokeEffectRef.current.startHide();
+        }
+        
         // Start hide animation for both content and hero number
         setContentAnimationState('hiding');
         setHeroNumberAnimationState('hiding');
         
-        // After hide animation completes, change section and show
+        // After 50% of hide animation, start showing new content (overlap)
         setTimeout(() => {
           setCurrentSection(newSection);
           setContentAnimationState('showing');
           setHeroNumberAnimationState('showing');
+          
+          // Start smoke show effect for new content
+          if (smokeEffectRef.current && contentBlock) {
+            const content = sections[newSection - 1];
+            
+            // Initialize with first element - use more precise Y positioning
+            if (noticeEl) {
+              const rect = noticeEl.getBoundingClientRect();
+              smokeEffectRef.current.initFromText(content.notice, rect.right, rect.top + (rect.height * 0.5), 11, 'bold');
+            }
+            
+            // Add particles for other elements
+            if (headingEl) {
+              const rect = headingEl.getBoundingClientRect();
+              smokeEffectRef.current.addTextCharacters(content.heading, rect.right, rect.top + (rect.height * 0.5), 24, 'bold');
+            }
+            if (metaEl) {
+              const rect = metaEl.getBoundingClientRect();
+              smokeEffectRef.current.addTextCharacters(content.meta, rect.right, rect.top + (rect.height * 0.5), 11, '300');
+            }
+            
+            smokeEffectRef.current.startShow();
+          }
           
           // Reset to idle after show animation completes
           setTimeout(() => {
@@ -70,7 +135,7 @@ export default function Home() {
             setHeroNumberAnimationState('idle');
             isTransitioning = false;
           }, ANIMATION_DURATION);
-        }, ANIMATION_DURATION);
+        }, ANIMATION_DURATION / 2); // Start show at 50% of hide duration
         
         scrollAccumulator = 0;
       };
@@ -190,26 +255,23 @@ export default function Home() {
       <style jsx global>{`
         @keyframes content-hide {
           0% {
-            filter: blur(0px);
             opacity: 1;
           }
-          95% {
-            filter: blur(1000px);
-            opacity: 1;
+          1% {
+            opacity: 0;
           }
           100% {
-            filter: blur(1000px);
             opacity: 0;
           }
         }
 
         @keyframes content-show {
           0% {
-            filter: blur(1000px);
+            filter: blur(100px);
             opacity: 0;
           }
-          5% {
-            filter: blur(1000px);
+          1% {
+            filter: blur(100px);
             opacity: 1;
           }
           100% {
@@ -220,19 +282,24 @@ export default function Home() {
 
         @keyframes hero-number-hide {
           0% {
-            filter: blur(0px);
             opacity: 1;
           }
+          1% {
+            opacity: 0;
+          }
           100% {
-            filter: blur(1000px);
             opacity: 0;
           }
         }
 
         @keyframes hero-number-show {
           0% {
-            filter: blur(1000px);
+            filter: blur(100px);
             opacity: 0;
+          }
+          1% {
+            filter: blur(100px);
+            opacity: 1;
           }
           100% {
             filter: blur(0px);
@@ -240,6 +307,21 @@ export default function Home() {
           }
         }
       `}</style>
+      
+      {/* Smoke effect canvas overlay */}
+      <canvas
+        ref={smokeCanvasRef}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          pointerEvents: 'none',
+          zIndex: 3,
+          willChange: 'contents',
+        }}
+      />
       
       <div className="landing-container" style={{
         // @ts-ignore

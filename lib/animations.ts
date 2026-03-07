@@ -48,6 +48,8 @@ export function getAnimationStyle(state: AnimationState): React.CSSProperties {
   if (state === 'showing') {
     return {
       animation: `content-show ${ANIMATION_DURATION}ms ease-in-out forwards`,
+      filter: 'blur(100px)',
+      opacity: 0,
     };
   }
   
@@ -69,8 +71,8 @@ export function getHeroNumberAnimationStyle(state: AnimationState): React.CSSPro
   if (state === 'showing') {
     return {
       animation: `hero-number-show ${ANIMATION_DURATION}ms ease-in-out forwards`,
-      filter: 'blur(1000px)',
-      opacity: 0, // Start hidden and blurred until animation begins
+      filter: 'blur(100px)',
+      opacity: 0,
     };
   }
   
