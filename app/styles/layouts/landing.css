@@ -140,8 +140,8 @@
 
 .decorator-line {
   width: 75px;
-  height: 2px;
-  background: var(--color-text);
+  height: 0;
+  border-bottom: 2px solid var(--color-text);
   margin-left: auto;
   margin-bottom: 50px;
 }

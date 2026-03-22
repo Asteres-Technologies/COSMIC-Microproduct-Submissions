@@ -31,7 +31,7 @@ export const animationKeyframes = `
       opacity: 1;
     }
     100% {
-      filter: blur(0px);
+      filter: none;
       opacity: 1;
     }
   }
@@ -53,11 +53,8 @@ export function getAnimationStyle(state: AnimationState): React.CSSProperties {
     };
   }
   
-  // idle state
-  return {
-    filter: 'blur(0px)',
-    opacity: 1,
-  };
+  // idle state — no filter to avoid compositing layer sub-pixel issues
+  return {};
 }
 
 // Get hero number animation CSS properties (blur + opacity for depth effect)
@@ -76,9 +73,6 @@ export function getHeroNumberAnimationStyle(state: AnimationState): React.CSSPro
     };
   }
   
-  // idle state
-  return {
-    filter: 'blur(0px)',
-    opacity: 1,
-  };
+  // idle state — no filter to avoid compositing layer sub-pixel issues
+  return {};
 }

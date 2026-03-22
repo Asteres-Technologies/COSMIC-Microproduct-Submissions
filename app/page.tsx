@@ -330,7 +330,7 @@ export default function Home() {
             opacity: 1;
           }
           100% {
-            filter: blur(0px);
+            filter: none;
             opacity: 1;
           }
         }
@@ -357,7 +357,7 @@ export default function Home() {
             opacity: 1;
           }
           100% {
-            filter: blur(0px);
+            filter: none;
             opacity: 1;
           }
         }

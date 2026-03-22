@@ -1001,10 +1001,15 @@ export default function BrowsePage() {
           1% { opacity: 0; }
           100% { opacity: 0; }
         }
-        @keyframes content-show {
+        @keyframes content-show-a {
           0% { filter: blur(100px); opacity: 0; }
           1% { filter: blur(100px); opacity: 1; }
-          100% { filter: blur(0px); opacity: 1; }
+          100% { filter: none; opacity: 1; }
+        }
+        @keyframes content-show-b {
+          0% { filter: blur(100px); opacity: 0; }
+          1% { filter: blur(100px); opacity: 1; }
+          100% { filter: none; opacity: 1; }
         }
       `}</style>
 
@@ -1245,7 +1250,11 @@ export default function BrowsePage() {
                   );
                 })}
               </div>
-              <div className="detail-section-content" style={getAnimationStyle(detailAnimState)}>
+              <div className="detail-section-content" style={
+                detailAnimState === 'showing'
+                  ? { animation: `content-show-${detailSection % 2 === 0 ? 'a' : 'b'} ${ANIMATION_DURATION}ms ease-in-out forwards`, filter: 'blur(100px)', opacity: 0 }
+                  : getAnimationStyle(detailAnimState)
+              }>
                 {currentDetailContent?.content}
               </div>
             </div>
