@@ -2,10 +2,12 @@
 
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { HERO_CUTOUT_CONFIG } from '@/lib/hero-cutout-config';
 import { sections } from '@/lib/sections-loader';
 import { AnimationState, getAnimationStyle, getHeroNumberAnimationStyle, ANIMATION_DURATION } from '@/lib/animations';
 import { SmokeEffect } from '@/lib/smoke-effect';
+import { ContentTransition } from '@/lib/content-transition';
 
 type Opportunity = {
   name: string;
@@ -14,14 +16,16 @@ type Opportunity = {
 };
 
 export default function Home() {
+  const router = useRouter();
   const [opps, setOpps] = useState<Opportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentSection, setCurrentSection] = useState(1);
-  const [contentAnimationState, setContentAnimationState] = useState<AnimationState>('idle');
-  const [heroNumberAnimationState, setHeroNumberAnimationState] = useState<AnimationState>('idle');
+  const [contentAnimationState, setContentAnimationState] = useState<AnimationState>('showing');
+  const [heroNumberAnimationState, setHeroNumberAnimationState] = useState<AnimationState>('showing');
   
   const smokeCanvasRef = useRef<HTMLCanvasElement>(null);
   const smokeEffectRef = useRef<SmokeEffect | null>(null);
+  const transitionRef = useRef<ContentTransition | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -42,12 +46,82 @@ export default function Home() {
     return () => { mounted = false };
   }, []);
 
-  // Initialize smoke effect
+  // Initialize smoke effect + content transition
   useEffect(() => {
     if (smokeCanvasRef.current && !smokeEffectRef.current) {
       smokeEffectRef.current = new SmokeEffect(smokeCanvasRef.current);
+      transitionRef.current = new ContentTransition(smokeEffectRef.current);
     }
+    return () => {
+      if (smokeEffectRef.current) {
+        smokeEffectRef.current.stop();
+        smokeEffectRef.current = null;
+        transitionRef.current = null;
+      }
+    };
   }, []);
+
+  // Initial page load: show first section with smoke
+  useEffect(() => {
+    if (!smokeEffectRef.current) return;
+    requestAnimationFrame(() => {
+      const noticeEl = document.querySelector('.section-notice') as HTMLElement;
+      const headingEl = document.querySelector('.main-heading') as HTMLElement;
+      const metaEl = document.querySelector('.meta-info') as HTMLElement;
+      if (!noticeEl || !smokeEffectRef.current) return;
+      
+      smokeEffectRef.current.initFromElement(noticeEl);
+      if (headingEl) smokeEffectRef.current.addFromElement(headingEl);
+      if (metaEl) smokeEffectRef.current.addFromElement(metaEl);
+      smokeEffectRef.current.startShow();
+    });
+    setTimeout(() => {
+      setContentAnimationState('idle');
+      setHeroNumberAnimationState('idle');
+    }, ANIMATION_DURATION);
+  }, []);
+
+  // Page exit: intercept nav link clicks, fire hide, then navigate
+  useEffect(() => {
+    let exiting = false;
+    const handleClick = (e: MouseEvent) => {
+      if (exiting) return;
+      const link = (e.target as HTMLElement).closest('.bottom-nav a[href]') as HTMLAnchorElement;
+      if (!link) return;
+      const href = link.getAttribute('href');
+      if (!href || href.startsWith('http') || href.startsWith('#') || href === window.location.pathname) return;
+      
+      e.preventDefault();
+      e.stopPropagation();
+      exiting = true;
+
+      // Fire smoke hide on visible content
+      if (smokeEffectRef.current) {
+        const noticeEl = document.querySelector('.section-notice') as HTMLElement;
+        const headingEl = document.querySelector('.main-heading') as HTMLElement;
+        const metaEl = document.querySelector('.meta-info') as HTMLElement;
+        if (noticeEl) {
+          smokeEffectRef.current.initFromElement(noticeEl);
+        }
+        if (headingEl) {
+          smokeEffectRef.current.addFromElement(headingEl);
+        }
+        if (metaEl) {
+          smokeEffectRef.current.addFromElement(metaEl);
+        }
+        smokeEffectRef.current.startHide();
+      }
+      setContentAnimationState('hiding');
+      setHeroNumberAnimationState('hiding');
+
+      setTimeout(() => {
+        router.push(href);
+      }, ANIMATION_DURATION / 2);
+    };
+
+    document.addEventListener('click', handleClick, true);
+    return () => document.removeEventListener('click', handleClick, true);
+  }, [router, currentSection]);
 
   // Wheel-based section navigation (no actual page scroll)
   // Dynamically handles any number of sections based on files in content/sections/
@@ -74,23 +148,17 @@ export default function Home() {
         
         // Start smoke effect on key content elements only (skip body for performance)
         if (smokeEffectRef.current && contentBlock) {
-          const content = sections[currentSection - 1];
-          
-          // Initialize with first element - use more precise Y positioning
+          // Initialize with first element using auto-detect
           if (noticeEl) {
-            const rect = noticeEl.getBoundingClientRect();
-            // Use top + half height for vertical center, matching textBaseline: 'middle'
-            smokeEffectRef.current.initFromText(content.notice, rect.right, rect.top + (rect.height * 0.5), 11, 'bold');
+            smokeEffectRef.current.initFromElement(noticeEl);
           }
           
           // Add particles for other elements
           if (headingEl) {
-            const rect = headingEl.getBoundingClientRect();
-            smokeEffectRef.current.addTextCharacters(content.heading, rect.right, rect.top + (rect.height * 0.5), 24, 'bold');
+            smokeEffectRef.current.addFromElement(headingEl);
           }
           if (metaEl) {
-            const rect = metaEl.getBoundingClientRect();
-            smokeEffectRef.current.addTextCharacters(content.meta, rect.right, rect.top + (rect.height * 0.5), 11, '300');
+            smokeEffectRef.current.addFromElement(metaEl);
           }
           
           smokeEffectRef.current.startHide();
@@ -108,22 +176,17 @@ export default function Home() {
           
           // Start smoke show effect for new content
           if (smokeEffectRef.current && contentBlock) {
-            const content = sections[newSection - 1];
-            
-            // Initialize with first element - use more precise Y positioning
+            // Initialize with first element using auto-detect
             if (noticeEl) {
-              const rect = noticeEl.getBoundingClientRect();
-              smokeEffectRef.current.initFromText(content.notice, rect.right, rect.top + (rect.height * 0.5), 11, 'bold');
+              smokeEffectRef.current.initFromElement(noticeEl);
             }
             
             // Add particles for other elements
             if (headingEl) {
-              const rect = headingEl.getBoundingClientRect();
-              smokeEffectRef.current.addTextCharacters(content.heading, rect.right, rect.top + (rect.height * 0.5), 24, 'bold');
+              smokeEffectRef.current.addFromElement(headingEl);
             }
             if (metaEl) {
-              const rect = metaEl.getBoundingClientRect();
-              smokeEffectRef.current.addTextCharacters(content.meta, rect.right, rect.top + (rect.height * 0.5), 11, '300');
+              smokeEffectRef.current.addFromElement(metaEl);
             }
             
             smokeEffectRef.current.startShow();
@@ -444,7 +507,7 @@ export default function Home() {
       {/* NEW HERO PAGE LAYOUT */}
       <div className="hero-page-layout">
         <div className="classification-marking">unclassified / public</div>
-        <div className="progress-indicator">
+        <div className="progress-indicator" style={getAnimationStyle(contentAnimationState)}>
           {/* Show 5 positions: 2 above, active center, 2 below */}
           {/* Dynamically calculates section numbers based on total sections */}
           {[-2, -1, 0, 1, 2].map((offset) => {
