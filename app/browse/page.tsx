@@ -857,11 +857,14 @@ export default function BrowsePage() {
 
     // Team
     if (p.team_members) {
-      const members = Array.isArray(p.team_members)
+      let members = Array.isArray(p.team_members)
         ? p.team_members.map((m: any) => typeof m === 'string' ? m : m.name).join(' · ')
         : typeof p.team_members === 'string'
           ? p.team_members.split(/\r?\n/).map((line: string) => line.split('<')[0].trim()).join(' · ')
           : '—';
+      if (p.lead_name && !members.includes(p.lead_name)) {
+        members = p.lead_name + ' · ' + members;
+      }
       pushTextSections('team', 'Team', members);
     }
 
