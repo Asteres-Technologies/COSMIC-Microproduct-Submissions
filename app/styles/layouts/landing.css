@@ -160,4 +160,6 @@
   font-size: var(--fs-body);
   color: var(--color-text);
   line-height: var(--lh-relaxed);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }

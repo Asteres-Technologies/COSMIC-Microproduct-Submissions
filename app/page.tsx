@@ -27,6 +27,8 @@ export default function Home() {
   const smokeCanvasRef = useRef<HTMLCanvasElement>(null);
   const smokeEffectRef = useRef<SmokeEffect | null>(null);
   const transitionRef = useRef<ContentTransition | null>(null);
+  const sectionTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const isHiding = useRef(false);
 
   useEffect(() => {
     let mounted = true;
@@ -131,77 +133,64 @@ export default function Home() {
   useEffect(() => {
     const totalSections = sections.length;
     let scrollAccumulator = 0;
-    const threshold = 300; // Amount of wheel delta needed to change sections
-    let isTransitioning = false;
+    const threshold = 300;
 
     const handleWheel = (e: WheelEvent) => {
-      if (isTransitioning) return;
+      // Block only during the hide→swap window, allow interrupt during show
+      if (isHiding.current) return;
 
       scrollAccumulator += e.deltaY;
 
       const changeSection = (newSection: number) => {
-        isTransitioning = true;
+        // Clear any pending timers from previous transition
+        sectionTimers.current.forEach(t => clearTimeout(t));
+        sectionTimers.current = [];
+
+        // If we're mid-show, snap to idle first
+        setContentAnimationState('idle');
+        setHeroNumberAnimationState('idle');
+
+        isHiding.current = true;
         
         // Get content elements for smoke effect
         const contentBlock = document.querySelector('.main-content-block');
         const noticeEl = document.querySelector('.section-notice') as HTMLElement;
         const headingEl = document.querySelector('.main-heading') as HTMLElement;
         const metaEl = document.querySelector('.meta-info') as HTMLElement;
-        const heroNumberEl = document.querySelector('.hero-number') as HTMLElement;
         
-        // Start smoke effect on key content elements only (skip body for performance)
+        // Start smoke effect on key content elements only
         if (smokeEffectRef.current && contentBlock) {
-          // Initialize with first element using auto-detect
-          if (noticeEl) {
-            smokeEffectRef.current.initFromElement(noticeEl);
-          }
-          
-          // Add particles for other elements
-          if (headingEl) {
-            smokeEffectRef.current.addFromElement(headingEl);
-          }
-          if (metaEl) {
-            smokeEffectRef.current.addFromElement(metaEl);
-          }
-          
+          if (noticeEl) smokeEffectRef.current.initFromElement(noticeEl);
+          if (headingEl) smokeEffectRef.current.addFromElement(headingEl);
+          if (metaEl) smokeEffectRef.current.addFromElement(metaEl);
           smokeEffectRef.current.startHide();
         }
         
-        // Start hide animation for both content and hero number
+        // Start hide animation for content and hero number
         setContentAnimationState('hiding');
         setHeroNumberAnimationState('hiding');
         
         // After 50% of hide animation, start showing new content (overlap)
-        setTimeout(() => {
+        sectionTimers.current.push(setTimeout(() => {
+          isHiding.current = false;
           setCurrentSection(newSection);
           setContentAnimationState('showing');
           setHeroNumberAnimationState('showing');
           
           // Start smoke show effect for new content
           if (smokeEffectRef.current && contentBlock) {
-            // Initialize with first element using auto-detect
-            if (noticeEl) {
-              smokeEffectRef.current.initFromElement(noticeEl);
-            }
-            
-            // Add particles for other elements
-            if (headingEl) {
-              smokeEffectRef.current.addFromElement(headingEl);
-            }
-            if (metaEl) {
-              smokeEffectRef.current.addFromElement(metaEl);
-            }
-            
+            if (noticeEl) smokeEffectRef.current.initFromElement(noticeEl);
+            if (headingEl) smokeEffectRef.current.addFromElement(headingEl);
+            if (metaEl) smokeEffectRef.current.addFromElement(metaEl);
             smokeEffectRef.current.startShow();
           }
           
           // Reset to idle after show animation completes
-          setTimeout(() => {
+          sectionTimers.current.push(setTimeout(() => {
             setContentAnimationState('idle');
             setHeroNumberAnimationState('idle');
-            isTransitioning = false;
-          }, ANIMATION_DURATION);
-        }, ANIMATION_DURATION / 2); // Start show at 50% of hide duration
+          }, ANIMATION_DURATION));
+        }, ANIMATION_DURATION / 2));
         
         scrollAccumulator = 0;
       };

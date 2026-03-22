@@ -396,12 +396,7 @@
   text-transform: uppercase;
 }
 
-.detail-section-content .decorator-line {
-  width: 75px;
-  height: 2px;
-  background: var(--color-text);
-  margin-left: auto;
-  margin-bottom: 50px;
-}
+/* Bullet line formatting for label: value pairs */
+/* Bullet line formatting handled via inline styles in JSX */
 
 /* Detail panel legacy styles kept for reference - now using home page classes */

@@ -42,6 +42,7 @@ export default function BrowsePage() {
   const [windowStart, setWindowStart] = useState(0);
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const isScrollTransitioning = useRef(false);
+  const scrollTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const isFilterTransitioning = useRef(false);
   const filterTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
@@ -51,6 +52,7 @@ export default function BrowsePage() {
   const [tableVisible, setTableVisible] = useState(true);
   const [detailSection, setDetailSection] = useState(0);
   const isDetailScrolling = useRef(false);
+  const detailTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   // Restore filter + scroll from sessionStorage
   useEffect(() => {
@@ -83,7 +85,17 @@ export default function BrowsePage() {
         try { data = await res.json(); } catch (err) { console.error('Failed to parse /api/storage response JSON', err); data = null; }
         if (!mounted) return;
         if (data && data.success && Array.isArray(data.files)) {
-          setOpportunities(data.files as Opportunity[]);
+          const real = data.files as Opportunity[];
+          const mocks: Opportunity[] = [
+            { name: 'approved__2026-02-01-orbital-debris-tracker.yaml', path: 'mock/1', parsed: { title: 'Orbital Debris Tracking Dashboard', purpose: 'Build a real-time visualization tool for tracking orbital debris using publicly available TLE data. The dashboard will display debris density maps, conjunction alerts, and historical trend analysis to support space situational awareness research.', duration_weeks: 6, output_type: 'Software Prototype', focus_area: 'Space Safety', lead_name: 'Marcus Chen', deliverable: 'Web-based dashboard with live debris tracking', milestones: 'Week 1: Data pipeline setup\nWeek 2-3: Visualization engine\nWeek 4-5: Alert system\nWeek 6: Testing and deployment', team_members: [{ name: 'Marcus Chen' }, { name: 'Sarah Kim' }, { name: 'Dev Patel' }], dependencies: 'CelesTrak TLE API access' } },
+            { name: 'pending__2026-02-10-lunar-comms-protocol.yaml', path: 'mock/2', parsed: { title: 'Lunar Surface Communications Protocol', purpose: 'Define a lightweight communications protocol optimized for lunar surface operations, addressing high-latency relay scenarios and power-constrained transceivers for small robotic assets.', duration_weeks: 10, output_type: 'Technical Specification', focus_area: 'Communications', lead_name: 'Aisha Patel', deliverable: 'Protocol specification document with reference implementation notes', milestones: 'Week 1-2: Requirements gathering\nWeek 3-5: Protocol design\nWeek 6-8: Simulation testing\nWeek 9-10: Documentation', team_members: [{ name: 'Aisha Patel' }, { name: 'James Wright' }], dependencies: 'None' } },
+            { name: 'approved__2026-01-20-radiation-ml-model.yaml', path: 'mock/3', parsed: { title: 'ML Radiation Exposure Forecasting', purpose: 'Develop a machine learning model that predicts radiation exposure levels for crewed missions based on solar activity data, orbital parameters, and shielding configurations.', duration_weeks: 8, output_type: 'Research Paper', focus_area: 'Research & Technology', lead_name: 'Elena Vasquez', deliverable: 'Trained model with validation results and research paper', milestones: 'Week 1-2: Data collection\nWeek 3-4: Model architecture\nWeek 5-6: Training and validation\nWeek 7-8: Paper writing', team_members: [{ name: 'Elena Vasquez' }, { name: 'Tom Nakamura' }, { name: 'Lisa Park' }, { name: 'Raj Gupta' }], dependencies: 'NASA SPE dataset access' } },
+            { name: 'pending__2026-03-01-supply-chain-sim.yaml', path: 'mock/4', parsed: { title: 'Cislunar Supply Chain Simulator', purpose: 'Create a discrete-event simulation framework for modeling cislunar supply chain logistics, including propellant depots, transfer vehicles, and surface storage facilities.', duration_weeks: 12, output_type: 'Software Prototype', focus_area: 'Logistics', lead_name: 'Jordan Blake', deliverable: 'Simulation framework with sample scenarios', milestones: 'Week 1-3: Architecture design\nWeek 4-7: Core simulation engine\nWeek 8-10: Scenario modeling\nWeek 11-12: Validation and docs', team_members: [{ name: 'Jordan Blake' }, { name: 'Nina Kowalski' }], dependencies: 'None' } },
+            { name: 'approved__2026-02-15-thermal-analysis-tool.yaml', path: 'mock/5', parsed: { title: 'Spacecraft Thermal Analysis Toolkit', purpose: 'Build an open-source thermal analysis toolkit for preliminary spacecraft design, supporting common orbital thermal environments and basic component-level modeling.', duration_weeks: 8, output_type: 'Software Prototype', focus_area: 'Engineering Tools', lead_name: 'Chris Donovan', deliverable: 'Python toolkit with CLI and documentation', milestones: 'Week 1-2: Thermal model library\nWeek 3-4: Solver implementation\nWeek 5-6: CLI and visualization\nWeek 7-8: Testing and docs', team_members: [{ name: 'Chris Donovan' }, { name: 'Amy Zhang' }, { name: 'Oscar Reyes' }], dependencies: 'None' } },
+            { name: 'pending__2026-02-20-mission-planning-ai.yaml', path: 'mock/6', parsed: { title: 'AI-Assisted Mission Planning', purpose: 'Explore using large language models to assist mission planners in generating preliminary mission architectures from natural language descriptions of mission objectives and constraints.', duration_weeks: 6, output_type: 'Whitepaper', focus_area: 'Research & Technology', lead_name: 'Priya Sharma', deliverable: 'Whitepaper with proof-of-concept demonstrations', milestones: 'Week 1: Literature review\nWeek 2-3: Prompt engineering\nWeek 4-5: Case studies\nWeek 6: Paper finalization', team_members: [{ name: 'Priya Sharma' }], dependencies: 'OpenAI API access' } },
+            { name: 'approved__2026-01-28-ground-ops-automation.yaml', path: 'mock/7', parsed: { title: 'Ground Operations Automation Framework', purpose: 'Design an automation framework for routine ground station operations including antenna scheduling, pass planning, and telemetry processing to reduce operator workload.', duration_weeks: 10, output_type: 'Technical Specification', focus_area: 'Ground Systems', lead_name: 'Mike Torres', deliverable: 'Framework specification with integration guide', milestones: 'Week 1-2: Current ops analysis\nWeek 3-5: Framework design\nWeek 6-8: Prototype automation scripts\nWeek 9-10: Documentation', team_members: [{ name: 'Mike Torres' }, { name: 'Karen Liu' }, { name: 'Ben Okafor' }], dependencies: 'Ground station access for testing' } },
+          ];
+          setOpportunities([...real, ...mocks]);
         } else {
           setOpportunities([]);
         }
@@ -277,6 +289,11 @@ export default function BrowsePage() {
 
       // Scroll down — hide top row, reveal new bottom row (wraps)
       if (scrollAccumulator > threshold) {
+        // Clear pending timers, snap any mid-show rows to idle
+        scrollTimers.current.forEach(t => clearTimeout(t));
+        scrollTimers.current = [];
+        setRowAnimStates(prev => prev.map(s => s === 'showing' ? 'idle' : s));
+
         isScrollTransitioning.current = true;
         scrollAccumulator = 0;
 
@@ -296,7 +313,7 @@ export default function BrowsePage() {
           }
         }
 
-        setTimeout(() => {
+        scrollTimers.current.push(setTimeout(() => {
           const lastSlot = MAX_VISIBLE_ROWS - 1;
           setRowsRevealed(prev => {
             const next = new Set(prev);
@@ -305,6 +322,8 @@ export default function BrowsePage() {
           });
 
           setWindowStart(prev => (prev + 1) % totalRows);
+
+          isScrollTransitioning.current = false;
 
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
@@ -326,20 +345,24 @@ export default function BrowsePage() {
                 }
               }
 
-              setTimeout(() => {
+              scrollTimers.current.push(setTimeout(() => {
                 setRowAnimStates(prev => {
                   const next = [...prev];
                   next[lastSlot] = 'idle';
                   return next;
                 });
-                isScrollTransitioning.current = false;
-              }, ANIMATION_DURATION);
+              }, ANIMATION_DURATION));
             });
           });
-        }, ANIMATION_DURATION / 4);
+        }, ANIMATION_DURATION / 4));
 
       // Scroll up — hide bottom row, reveal new top row (wraps)
       } else if (scrollAccumulator < -threshold) {
+        // Clear pending timers, snap any mid-show rows to idle
+        scrollTimers.current.forEach(t => clearTimeout(t));
+        scrollTimers.current = [];
+        setRowAnimStates(prev => prev.map(s => s === 'showing' ? 'idle' : s));
+
         isScrollTransitioning.current = true;
         scrollAccumulator = 0;
 
@@ -361,7 +384,7 @@ export default function BrowsePage() {
           }
         }
 
-        setTimeout(() => {
+        scrollTimers.current.push(setTimeout(() => {
           setRowsRevealed(prev => {
             const next = new Set(prev);
             next.delete(0);
@@ -369,6 +392,8 @@ export default function BrowsePage() {
           });
 
           setWindowStart(prev => (prev - 1 + totalRows) % totalRows);
+
+          isScrollTransitioning.current = false;
 
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
@@ -390,17 +415,16 @@ export default function BrowsePage() {
                 }
               }
 
-              setTimeout(() => {
+              scrollTimers.current.push(setTimeout(() => {
                 setRowAnimStates(prev => {
                   const next = [...prev];
                   next[0] = 'idle';
                   return next;
                 });
-                isScrollTransitioning.current = false;
-              }, ANIMATION_DURATION);
+              }, ANIMATION_DURATION));
             });
           });
-        }, ANIMATION_DURATION / 4);
+        }, ANIMATION_DURATION / 4));
       }
     };
 
@@ -419,10 +443,18 @@ export default function BrowsePage() {
     const threshold = 300;
 
     const handleDetailWheel = (e: WheelEvent) => {
+      // Block only during hide→swap, allow interrupt during show
       if (isDetailScrolling.current) return;
       scrollAccumulator += e.deltaY;
 
       const changeSection = (newSection: number) => {
+        // Clear pending timers from previous transition
+        detailTimers.current.forEach(t => clearTimeout(t));
+        detailTimers.current = [];
+
+        // Snap to idle if mid-show
+        setDetailAnimState('idle');
+
         isDetailScrolling.current = true;
 
         // Smoke hide current section fields
@@ -439,7 +471,8 @@ export default function BrowsePage() {
         setDetailAnimState('hiding');
 
         // At overlap point, swap section and show new content
-        setTimeout(() => {
+        detailTimers.current.push(setTimeout(() => {
+          isDetailScrolling.current = false;
           setDetailSection(newSection);
           setDetailAnimState('showing');
 
@@ -458,11 +491,10 @@ export default function BrowsePage() {
             });
           });
 
-          setTimeout(() => {
+          detailTimers.current.push(setTimeout(() => {
             setDetailAnimState('idle');
-            isDetailScrolling.current = false;
-          }, ANIMATION_DURATION);
-        }, ANIMATION_DURATION / 2);
+          }, ANIMATION_DURATION));
+        }, ANIMATION_DURATION / 2));
 
         scrollAccumulator = 0;
       };
@@ -701,90 +733,141 @@ export default function BrowsePage() {
     if (!opp) return [];
     const p = opp.parsed || {};
     const status = (opp.name?.split('__')?.[0] ?? '').toUpperCase();
+    const title = p.title ?? opp.name;
     const secs: { label: string; content: React.ReactNode }[] = [];
 
-    // Section 1: Overview
+    // Max chars per section body — roughly what fits in the viewport
+    const MAX_CHARS = 600;
+
+    // Helper: split text into chunks that break at paragraph/line boundaries
+    const chunkText = (text: string): string[] => {
+      if (text.length <= MAX_CHARS) return [text];
+      const chunks: string[] = [];
+      let remaining = text;
+      while (remaining.length > 0) {
+        if (remaining.length <= MAX_CHARS) {
+          chunks.push(remaining);
+          break;
+        }
+        // Find a good break point — last double newline, single newline, or space before limit
+        let breakAt = remaining.lastIndexOf('\n\n', MAX_CHARS);
+        if (breakAt < MAX_CHARS * 0.3) breakAt = remaining.lastIndexOf('\n', MAX_CHARS);
+        if (breakAt < MAX_CHARS * 0.3) breakAt = remaining.lastIndexOf(' ', MAX_CHARS);
+        if (breakAt < MAX_CHARS * 0.3) breakAt = MAX_CHARS;
+        chunks.push(remaining.slice(0, breakAt).trimEnd());
+        remaining = remaining.slice(breakAt).trimStart();
+      }
+      return chunks;
+    };
+
+    // Helper: convert URLs to links, replace ":" with bold " | ", strip bullet hyphens
+    const linkify = (text: string): React.ReactNode => {
+      // Strip leading bullet markers from each line
+      const lines = text.split('\n');
+      const processed = lines.map((line) => {
+        return line.replace(/^\s*[-–•]\s+/, '');
+      }).join('\n');
+
+      // Split by URLs first
+      const urlParts = processed.split(/(https?:\/\/[^\s]+)/g);
+
+      return urlParts.map((part, i) => {
+        if (/^https?:\/\//.test(part)) {
+          return <a key={`u${i}`} href={part} target="_blank" rel="noreferrer" style={{ color: '#696A6F', textDecoration: 'underline' }}>{part}</a>;
+        }
+        // Replace first ":" on each line with bold " | "
+        const lineSegs = part.split('\n');
+        const hasLabels = lineSegs.some(l => { const ci = l.indexOf(':'); return ci > 0 && ci < 60; });
+        return lineSegs.map((line, li) => {
+          const colonIdx = line.indexOf(':');
+          if (colonIdx > 0 && colonIdx < 60) {
+            const label = line.slice(0, colonIdx);
+            const value = line.slice(colonIdx + 1).trimStart();
+            return (
+              <div key={`${i}-${li}`} style={{ display: 'block', marginTop: '12px', marginBottom: '12px' }}>
+                <span style={{ fontWeight: 700, fontSize: '16px' }}>{label}</span>
+                <span style={{ fontWeight: 700, fontSize: '16px' }}> | </span>
+                <span style={{ fontWeight: 700, fontSize: '16px' }}>{value}</span>
+              </div>
+            );
+          }
+          if (hasLabels) {
+            return <div key={`${i}-${li}`} style={{ fontSize: '12px', fontWeight: 400 }}>{line}</div>;
+          }
+          return <div key={`${i}-${li}`}>{line}</div>;
+        });
+      });
+    };
+
+    // Helper: push one or more sections for a text field
+    const pushTextSections = (label: string, heading: string, text: string, preWrap?: boolean) => {
+      const chunks = chunkText(text);
+      chunks.forEach((chunk, i) => {
+        const displayHeading = chunks.length > 1 ? `${heading} (${i + 1}/${chunks.length})` : heading;
+        secs.push({
+          label: `${label}-${i}`,
+          content: (
+            <>
+              <p className="detail-field section-notice">{title}</p>
+              <h1 className="detail-field main-heading">{displayHeading}</h1>
+              <div className="decorator-line"></div>
+              <div className="detail-field body-paragraph" style={preWrap ? { whiteSpace: 'pre-wrap' } : undefined}>{linkify(chunk)}</div>
+            </>
+          ),
+        });
+      });
+    };
+
+    // Section 1: Overview (always fits)
     secs.push({
       label: 'overview',
       content: (
         <>
           <p className="detail-field section-notice">{status}</p>
-          <h1 className="detail-field main-heading">{p.title ?? opp.name}</h1>
+          <h1 className="detail-field main-heading">{title}</h1>
           <div className="decorator-line"></div>
           <p className="detail-field meta-info">
             {p.duration_weeks ? `${p.duration_weeks} weeks` : '—'} · {p.output_type ?? '—'} · {p.focus_area ?? '—'}
           </p>
-          <p className="detail-field body-paragraph">
-            Lead: {p.lead_name ?? '—'}
-            {p.deliverable ? ` · Deliverable: ${p.deliverable}` : ''}
-          </p>
+          <div className="detail-field body-paragraph" style={{ marginTop: '12px' }}>
+            <span style={{ fontWeight: 700 }}>Lead</span>
+            <span style={{ fontWeight: 700 }}> | </span>
+            <span>{p.lead_name ?? '—'}</span>
+          </div>
+          {p.deliverable && (
+            <div className="detail-field" style={{ marginTop: '20px' }}>
+              <div className="body-paragraph" style={{ fontWeight: 700, marginBottom: '8px' }}>Deliverable</div>
+              <div className="decorator-line"></div>
+              <div className="body-paragraph">{p.deliverable}</div>
+            </div>
+          )}
         </>
       ),
     });
 
-    // Section 2: Description
+    // Description — may chunk
     if (p.purpose) {
-      secs.push({
-        label: 'description',
-        content: (
-          <>
-            <p className="detail-field section-notice">{p.title ?? opp.name}</p>
-            <h1 className="detail-field main-heading">Description</h1>
-            <div className="decorator-line"></div>
-            <p className="detail-field body-paragraph">{p.purpose}</p>
-          </>
-        ),
-      });
+      pushTextSections('description', 'Description', p.purpose);
     }
 
-    // Section 3: Timeline
+    // Timeline — may chunk (pre-wrap)
     if (p.milestones) {
-      secs.push({
-        label: 'timeline',
-        content: (
-          <>
-            <p className="detail-field section-notice">{p.title ?? opp.name}</p>
-            <h1 className="detail-field main-heading">Timeline</h1>
-            <div className="decorator-line"></div>
-            <p className="detail-field body-paragraph" style={{ whiteSpace: 'pre-wrap' }}>{p.milestones}</p>
-          </>
-        ),
-      });
+      pushTextSections('timeline', 'Timeline', p.milestones, true);
     }
 
-    // Section 4: Team
+    // Team
     if (p.team_members) {
       const members = Array.isArray(p.team_members)
         ? p.team_members.map((m: any) => typeof m === 'string' ? m : m.name).join(' · ')
         : typeof p.team_members === 'string'
           ? p.team_members.split(/\r?\n/).map((line: string) => line.split('<')[0].trim()).join(' · ')
           : '—';
-      secs.push({
-        label: 'team',
-        content: (
-          <>
-            <p className="detail-field section-notice">{p.title ?? opp.name}</p>
-            <h1 className="detail-field main-heading">Team</h1>
-            <div className="decorator-line"></div>
-            <p className="detail-field body-paragraph">{members}</p>
-          </>
-        ),
-      });
+      pushTextSections('team', 'Team', members);
     }
 
-    // Section 5: Dependencies
+    // Dependencies
     if (p.dependencies) {
-      secs.push({
-        label: 'dependencies',
-        content: (
-          <>
-            <p className="detail-field section-notice">{p.title ?? opp.name}</p>
-            <h1 className="detail-field main-heading">Dependencies</h1>
-            <div className="decorator-line"></div>
-            <p className="detail-field body-paragraph">{p.dependencies}</p>
-          </>
-        ),
-      });
+      pushTextSections('dependencies', 'Dependencies', p.dependencies);
     }
 
     return secs;
