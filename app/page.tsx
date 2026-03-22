@@ -22,6 +22,7 @@ export default function Home() {
   const [currentSection, setCurrentSection] = useState(1);
   const [contentAnimationState, setContentAnimationState] = useState<AnimationState>('showing');
   const [heroNumberAnimationState, setHeroNumberAnimationState] = useState<AnimationState>('showing');
+  const [navAnimState, setNavAnimState] = useState<AnimationState>('showing');
   
   const smokeCanvasRef = useRef<HTMLCanvasElement>(null);
   const smokeEffectRef = useRef<SmokeEffect | null>(null);
@@ -78,6 +79,7 @@ export default function Home() {
     setTimeout(() => {
       setContentAnimationState('idle');
       setHeroNumberAnimationState('idle');
+      setNavAnimState('idle');
     }, ANIMATION_DURATION);
   }, []);
 
@@ -113,6 +115,7 @@ export default function Home() {
       }
       setContentAnimationState('hiding');
       setHeroNumberAnimationState('hiding');
+      setNavAnimState('hiding');
 
       setTimeout(() => {
         router.push(href);
@@ -507,7 +510,7 @@ export default function Home() {
       {/* NEW HERO PAGE LAYOUT */}
       <div className="hero-page-layout">
         <div className="classification-marking">unclassified / public</div>
-        <div className="progress-indicator" style={getAnimationStyle(contentAnimationState)}>
+        <div className="progress-indicator" style={getAnimationStyle(navAnimState)}>
           {/* Show 5 positions: 2 above, active center, 2 below */}
           {/* Dynamically calculates section numbers based on total sections */}
           {[-2, -1, 0, 1, 2].map((offset) => {

@@ -16,16 +16,6 @@ type Opportunity = {
   error?: string;
 };
 
-const MOCK_OPPORTUNITIES: Opportunity[] = [
-  { name: 'approved__2025-03-01__orbital-debris-tracker', path: 'mock/1', parsed: { title: 'Orbital Debris Tracker', purpose: 'Real-time tracking of orbital debris using open data', duration_weeks: 8, team_members: ['Alice Chen', 'Bob Martinez', 'Carol Wu'], lead_name: 'Alice Chen', focus_area: 'Space Safety', output_type: 'Web App', deliverable: 'Interactive debris map' } },
-  { name: 'in-progress__2025-02-15__spectrum-analyzer', path: 'mock/2', parsed: { title: 'RF Spectrum Analyzer', purpose: 'Lightweight spectrum analysis tool for ground stations', duration_weeks: 6, team_members: ['Dan Kowalski', 'Eve Nakamura'], lead_name: 'Dan Kowalski', focus_area: 'Communications', output_type: 'Desktop Tool', deliverable: 'Standalone analyzer' } },
-  { name: 'pending__2025-03-10__launch-window-calc', path: 'mock/3', parsed: { title: 'Launch Window Calculator', purpose: 'Compute optimal launch windows for LEO missions', duration_weeks: 4, team_members: ['Frank Osei'], lead_name: 'Frank Osei', focus_area: 'Mission Planning', output_type: 'API', deliverable: 'REST endpoint' } },
-  { name: 'approved__2025-01-20__thermal-model-lite', path: 'mock/4', parsed: { title: 'Thermal Model Lite', purpose: 'Simplified thermal modeling for small satellites', duration_weeks: 10, team_members: ['Grace Liu', 'Hank Petrov', 'Ines Moreau', 'Jake Odom'], lead_name: 'Grace Liu', focus_area: 'Thermal Engineering', output_type: 'Python Library', deliverable: 'pip package' } },
-  { name: 'completed__2025-01-05__link-budget-tool', path: 'mock/5', parsed: { title: 'Link Budget Tool', purpose: 'Quick link budget calculations for S-band and X-band', duration_weeks: 3, team_members: ['Karen Singh', 'Leo Brandt'], lead_name: 'Karen Singh', focus_area: 'Communications', output_type: 'Web App', deliverable: 'Calculator page' } },
-  { name: 'in-progress__2025-02-28__ground-station-dash', path: 'mock/6', parsed: { title: 'Ground Station Dashboard', purpose: 'Monitoring dashboard for distributed ground station network', duration_weeks: 12, team_members: ['Mia Torres', 'Noah Kim', 'Olivia Jansen'], lead_name: 'Mia Torres', focus_area: 'Ground Systems', output_type: 'Web App', deliverable: 'Live dashboard' } },
-  { name: 'pending__2025-03-18__attitude-sim', path: 'mock/7', parsed: { title: 'Attitude Control Simulator', purpose: 'Browser-based attitude determination and control sim', duration_weeks: 8, team_members: ['Paul Reeves', 'Quinn Zhao', 'Rita Holm', 'Sam Ito', 'Tina Voss'], lead_name: 'Paul Reeves', focus_area: 'GNC', output_type: 'Web App', deliverable: '3D sim viewer' } },
-];
-
 export default function BrowsePage() {
   const router = useRouter();
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
@@ -55,6 +45,35 @@ export default function BrowsePage() {
   const isFilterTransitioning = useRef(false);
   const filterTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
+  // Detail panel state
+  const [viewingOpp, setViewingOpp] = useState<Opportunity | null>(null);
+  const [detailAnimState, setDetailAnimState] = useState<AnimationState>('idle');
+  const [tableVisible, setTableVisible] = useState(true);
+  const [detailSection, setDetailSection] = useState(0);
+  const isDetailScrolling = useRef(false);
+
+  // Restore filter + scroll from sessionStorage
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem('browse-state');
+      if (saved) {
+        const state = JSON.parse(saved);
+        if (state.filter) setActiveFilter(state.filter);
+        if (typeof state.windowStart === 'number') setWindowStart(state.windowStart);
+      }
+    } catch {}
+  }, []);
+
+  // Persist filter + scroll to sessionStorage
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('browse-state', JSON.stringify({
+        filter: activeFilter,
+        windowStart,
+      }));
+    } catch {}
+  }, [activeFilter, windowStart]);
+
   useEffect(() => {
     let mounted = true;
     const load = async () => {
@@ -64,12 +83,12 @@ export default function BrowsePage() {
         try { data = await res.json(); } catch (err) { console.error('Failed to parse /api/storage response JSON', err); data = null; }
         if (!mounted) return;
         if (data && data.success && Array.isArray(data.files)) {
-          setOpportunities([...data.files as Opportunity[], ...MOCK_OPPORTUNITIES]);
+          setOpportunities(data.files as Opportunity[]);
         } else {
-          setOpportunities(MOCK_OPPORTUNITIES);
+          setOpportunities([]);
         }
       } catch (e) {
-        setOpportunities(MOCK_OPPORTUNITIES);
+        setOpportunities([]);
       } finally {
         if (mounted) setLoading(false);
       }
@@ -215,6 +234,12 @@ export default function BrowsePage() {
             smokeEffectRef.current!.addFromElement(htmlEl);
           }
         });
+        // Include detail view fields if visible
+        document.querySelectorAll('.detail-section-content .detail-field').forEach(el => {
+          const htmlEl = el as HTMLElement;
+          if (first) { smokeEffectRef.current!.initFromElement(htmlEl); first = false; }
+          else smokeEffectRef.current!.addFromElement(htmlEl);
+        });
         smokeEffectRef.current.startHide();
       }
 
@@ -223,6 +248,7 @@ export default function BrowsePage() {
       setFilterBarAnimState('hiding');
       setScrollDotsAnimState('hiding');
       setRowAnimStates(prev => prev.map(() => 'hiding'));
+      setDetailAnimState('hiding');
       if (filtersVisible) {
         setPillAnimStates(prev => prev.map(() => 'hiding' as AnimationState));
       }
@@ -381,6 +407,78 @@ export default function BrowsePage() {
     window.addEventListener('wheel', handleWheel, { passive: true });
     return () => window.removeEventListener('wheel', handleWheel);
   }, [windowStart, opportunities.length, activeFilter]);
+
+  // Wheel-based detail section scrolling (like home page)
+  useEffect(() => {
+    if (!viewingOpp) return;
+    const detailSections = getDetailSections(viewingOpp);
+    const totalSections = detailSections.length;
+    if (totalSections <= 1) return;
+
+    let scrollAccumulator = 0;
+    const threshold = 300;
+
+    const handleDetailWheel = (e: WheelEvent) => {
+      if (isDetailScrolling.current) return;
+      scrollAccumulator += e.deltaY;
+
+      const changeSection = (newSection: number) => {
+        isDetailScrolling.current = true;
+
+        // Smoke hide current section fields
+        if (smokeEffectRef.current) {
+          const fields = document.querySelectorAll('.detail-section-content .detail-field') as NodeListOf<HTMLElement>;
+          if (fields.length > 0) {
+            smokeEffectRef.current.initFromElement(fields[0]);
+            for (let i = 1; i < fields.length; i++) {
+              smokeEffectRef.current.addFromElement(fields[i]);
+            }
+            smokeEffectRef.current.startHide();
+          }
+        }
+        setDetailAnimState('hiding');
+
+        // At overlap point, swap section and show new content
+        setTimeout(() => {
+          setDetailSection(newSection);
+          setDetailAnimState('showing');
+
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              if (smokeEffectRef.current) {
+                const fields = document.querySelectorAll('.detail-section-content .detail-field') as NodeListOf<HTMLElement>;
+                if (fields.length > 0) {
+                  smokeEffectRef.current.initFromElement(fields[0]);
+                  for (let i = 1; i < fields.length; i++) {
+                    smokeEffectRef.current.addFromElement(fields[i]);
+                  }
+                  smokeEffectRef.current.startShow();
+                }
+              }
+            });
+          });
+
+          setTimeout(() => {
+            setDetailAnimState('idle');
+            isDetailScrolling.current = false;
+          }, ANIMATION_DURATION);
+        }, ANIMATION_DURATION / 2);
+
+        scrollAccumulator = 0;
+      };
+
+      if (scrollAccumulator > threshold) {
+        const next = detailSection === totalSections - 1 ? 0 : detailSection + 1;
+        changeSection(next);
+      } else if (scrollAccumulator < -threshold) {
+        const prev = detailSection === 0 ? totalSections - 1 : detailSection - 1;
+        changeSection(prev);
+      }
+    };
+
+    window.addEventListener('wheel', handleDetailWheel, { passive: true });
+    return () => window.removeEventListener('wheel', handleDetailWheel);
+  }, [viewingOpp, detailSection]);
 
   // SVG glass cutout effect for classification marking
   useEffect(() => {
@@ -598,6 +696,203 @@ export default function BrowsePage() {
     return opps; // Default order
   };
 
+  // Build detail sections from opportunity data
+  const getDetailSections = (opp: Opportunity | null) => {
+    if (!opp) return [];
+    const p = opp.parsed || {};
+    const status = (opp.name?.split('__')?.[0] ?? '').toUpperCase();
+    const secs: { label: string; content: React.ReactNode }[] = [];
+
+    // Section 1: Overview
+    secs.push({
+      label: 'overview',
+      content: (
+        <>
+          <p className="detail-field section-notice">{status}</p>
+          <h1 className="detail-field main-heading">{p.title ?? opp.name}</h1>
+          <div className="decorator-line"></div>
+          <p className="detail-field meta-info">
+            {p.duration_weeks ? `${p.duration_weeks} weeks` : '—'} · {p.output_type ?? '—'} · {p.focus_area ?? '—'}
+          </p>
+          <p className="detail-field body-paragraph">
+            Lead: {p.lead_name ?? '—'}
+            {p.deliverable ? ` · Deliverable: ${p.deliverable}` : ''}
+          </p>
+        </>
+      ),
+    });
+
+    // Section 2: Description
+    if (p.purpose) {
+      secs.push({
+        label: 'description',
+        content: (
+          <>
+            <p className="detail-field section-notice">{p.title ?? opp.name}</p>
+            <h1 className="detail-field main-heading">Description</h1>
+            <div className="decorator-line"></div>
+            <p className="detail-field body-paragraph">{p.purpose}</p>
+          </>
+        ),
+      });
+    }
+
+    // Section 3: Timeline
+    if (p.milestones) {
+      secs.push({
+        label: 'timeline',
+        content: (
+          <>
+            <p className="detail-field section-notice">{p.title ?? opp.name}</p>
+            <h1 className="detail-field main-heading">Timeline</h1>
+            <div className="decorator-line"></div>
+            <p className="detail-field body-paragraph" style={{ whiteSpace: 'pre-wrap' }}>{p.milestones}</p>
+          </>
+        ),
+      });
+    }
+
+    // Section 4: Team
+    if (p.team_members) {
+      const members = Array.isArray(p.team_members)
+        ? p.team_members.map((m: any) => typeof m === 'string' ? m : m.name).join(' · ')
+        : typeof p.team_members === 'string'
+          ? p.team_members.split(/\r?\n/).map((line: string) => line.split('<')[0].trim()).join(' · ')
+          : '—';
+      secs.push({
+        label: 'team',
+        content: (
+          <>
+            <p className="detail-field section-notice">{p.title ?? opp.name}</p>
+            <h1 className="detail-field main-heading">Team</h1>
+            <div className="decorator-line"></div>
+            <p className="detail-field body-paragraph">{members}</p>
+          </>
+        ),
+      });
+    }
+
+    // Section 5: Dependencies
+    if (p.dependencies) {
+      secs.push({
+        label: 'dependencies',
+        content: (
+          <>
+            <p className="detail-field section-notice">{p.title ?? opp.name}</p>
+            <h1 className="detail-field main-heading">Dependencies</h1>
+            <div className="decorator-line"></div>
+            <p className="detail-field body-paragraph">{p.dependencies}</p>
+          </>
+        ),
+      });
+    }
+
+    return secs;
+  };
+
+  // View detail — smoke hide table, show detail panel
+  const handleView = (opp: Opportunity) => {
+    if (viewingOpp) return;
+
+    // Smoke hide all visible rows
+    if (smokeEffectRef.current) {
+      let first = true;
+      document.querySelectorAll('.table-row .title').forEach(el => {
+        const htmlEl = el as HTMLElement;
+        if (first) { smokeEffectRef.current!.initFromElement(htmlEl); first = false; }
+        else smokeEffectRef.current!.addFromElement(htmlEl);
+      });
+      smokeEffectRef.current.startHide();
+    }
+
+    setHeadingAnimState('hiding');
+    setFilterBarAnimState('hiding');
+    setScrollDotsAnimState('hiding');
+    setRowAnimStates(prev => prev.map(() => 'hiding'));
+
+    setTimeout(() => {
+      setTableVisible(false);
+      setViewingOpp(opp);
+      setDetailSection(0);
+      setDetailAnimState('showing');
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const detailEls = document.querySelectorAll('.detail-section-content .detail-field') as NodeListOf<HTMLElement>;
+          if (detailEls.length > 0 && smokeEffectRef.current) {
+            smokeEffectRef.current.initFromElement(detailEls[0]);
+            for (let i = 1; i < detailEls.length; i++) {
+              smokeEffectRef.current.addFromElement(detailEls[i]);
+            }
+            smokeEffectRef.current.startShow();
+          }
+        });
+      });
+
+      setTimeout(() => setDetailAnimState('idle'), ANIMATION_DURATION);
+    }, ANIMATION_DURATION / 4);
+  };
+
+  // Close detail — smoke hide detail, show table (fast, no stagger)
+  const handleCloseDetail = () => {
+    if (!viewingOpp) return;
+
+    // Smoke hide detail fields
+    if (smokeEffectRef.current) {
+      const detailEls = document.querySelectorAll('.detail-section-content .detail-field') as NodeListOf<HTMLElement>;
+      if (detailEls.length > 0) {
+        smokeEffectRef.current.initFromElement(detailEls[0]);
+        for (let i = 1; i < detailEls.length; i++) {
+          smokeEffectRef.current.addFromElement(detailEls[i]);
+        }
+        smokeEffectRef.current.startHide();
+      }
+    }
+    setDetailAnimState('hiding');
+
+    setTimeout(() => {
+      setViewingOpp(null);
+      setDetailAnimState('idle');
+      setTableVisible(true);
+
+      // Show table back — all at once (fast return)
+      setHeadingAnimState('showing');
+      setFilterBarAnimState('showing');
+      setScrollDotsAnimState('showing');
+      const visibleCount = Math.min(getSortedOpportunities().length, MAX_VISIBLE_ROWS);
+      setRowsRevealed(new Set(Array.from({ length: visibleCount }, (_, i) => i)));
+      setRowAnimStates(new Array(visibleCount).fill('showing'));
+
+      requestAnimationFrame(() => {
+        // Smoke show heading
+        const headingEl = document.querySelector('.browse-heading') as HTMLElement;
+        if (headingEl && smokeEffectRef.current) {
+          smokeEffectRef.current.initFromElement(headingEl);
+          smokeEffectRef.current.startShow();
+        }
+        // Smoke show all row titles at once
+        let first = true;
+        document.querySelectorAll('.table-row .title').forEach(el => {
+          const htmlEl = el as HTMLElement;
+          if (first && smokeEffectRef.current) {
+            smokeEffectRef.current.initFromElement(htmlEl);
+            first = false;
+          } else if (smokeEffectRef.current) {
+            smokeEffectRef.current.addFromElement(htmlEl);
+          }
+        });
+        if (smokeEffectRef.current) smokeEffectRef.current.startShow();
+      });
+
+      setTimeout(() => {
+        setHeadingAnimState('idle');
+        setFilterBarAnimState('idle');
+        setScrollDotsAnimState('idle');
+        setRowAnimStates(prev => prev.map(() => 'idle'));
+      }, ANIMATION_DURATION);
+    }, ANIMATION_DURATION / 4);
+  };
+
   const renderTeam = (rawOrParsed: any) => {
     if (!rawOrParsed) return null;
     const tm = rawOrParsed.team_members;
@@ -680,6 +975,7 @@ export default function BrowsePage() {
         <div className="classification-marking">unclassified / public</div>
 
         {/* Table container - centered */}
+        {tableVisible && (
         <div className="table-container" ref={tableContainerRef}>
           {/* Page heading */}
           <h1 className="browse-heading" style={getAnimationStyle(headingAnimState)}>Browse Microproducts</h1>
@@ -807,7 +1103,7 @@ export default function BrowsePage() {
                   <div className="members">{teamCount} Members</div>
                   <div className={`status ${status === 'approved' ? 'approved' : 'pending'}`}>{status.toUpperCase()}</div>
                   <div className="actions">
-                    <button className="btn-view">VIEW</button>
+                    <button className="btn-view" onClick={() => handleView(opp)}>VIEW</button>
                     {!joined[opp.name] && !joinForms[opp.name] && (
                       <button className="btn-join" onClick={() => startJoin(opp.name)}>JOIN</button>
                     )}
@@ -843,6 +1139,36 @@ export default function BrowsePage() {
           })()}
           </div>
         </div>
+        )}
+
+        {/* Detail panel - right-aligned, section-based like home page */}
+        {viewingOpp && (() => {
+          const detailSections = getDetailSections(viewingOpp);
+          const currentDetailContent = detailSections[detailSection];
+          const totalSections = detailSections.length;
+          return (
+            <div className="detail-panel">
+              <button className="detail-back" onClick={handleCloseDetail}>← BACK</button>
+              <div className="detail-progress">
+                {[-2, -1, 0, 1, 2].map((offset) => {
+                  const total = detailSections.length;
+                  const sectionNum = ((detailSection + offset + total) % total) + 1;
+                  const absOffset = Math.abs(offset);
+                  const cls = absOffset === 0 ? 'active' : absOffset === 1 ? 'secondary' : 'tertiary';
+                  return (
+                    <div key={offset} className={`detail-progress-marker ${cls}`}>
+                      {sectionNum < 10 ? `0${sectionNum}` : sectionNum}
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="detail-section-content" style={getAnimationStyle(detailAnimState)}>
+                {currentDetailContent?.content}
+              </div>
+            </div>
+          );
+        })()}
+
         <nav className="bottom-nav">
           <Link href="/" data-text="HOME">HOME</Link>
           <Link href="/submit" data-text="SUBMIT PRODUCT">SUBMIT PRODUCT</Link>

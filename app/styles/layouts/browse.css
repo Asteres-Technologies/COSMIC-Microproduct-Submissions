@@ -313,3 +313,95 @@
 .scroll-dot.active {
   background: #696A6F;
 }
+
+/* Detail panel - right-aligned like home page */
+.detail-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.detail-back {
+  position: fixed;
+  top: 120px;
+  right: 100px;
+  font-family: var(--font-inter);
+  font-weight: var(--fw-regular);
+  font-size: 11px;
+  color: #696A6F;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 5px 0;
+  transition: opacity 400ms ease-in-out;
+  pointer-events: all;
+  z-index: 4;
+}
+
+.detail-back:hover {
+  opacity: 0.6;
+}
+
+/* Detail section progress indicator - right rail like home page */
+.detail-progress {
+  position: fixed;
+  right: 25px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 100;
+  align-items: center;
+  pointer-events: none;
+}
+
+.detail-progress-marker {
+  font-family: var(--font-inter);
+  font-weight: var(--fw-extra-bold);
+  font-size: 16px;
+  color: var(--color-text);
+  text-align: center;
+  transition: opacity 400ms ease-in-out;
+}
+
+.detail-progress-marker.active {
+  opacity: 1;
+}
+
+.detail-progress-marker.secondary {
+  opacity: 0.5;
+}
+
+.detail-progress-marker.tertiary {
+  opacity: 0.25;
+}
+
+/* Detail section content - matches main-content-block from home page */
+.detail-section-content {
+  max-width: 800px;
+  text-align: right;
+  padding-right: 100px;
+  pointer-events: all;
+}
+
+.detail-section-content .section-notice {
+  text-transform: uppercase;
+}
+
+.detail-section-content .decorator-line {
+  width: 75px;
+  height: 2px;
+  background: var(--color-text);
+  margin-left: auto;
+  margin-bottom: 50px;
+}
+
+/* Detail panel legacy styles kept for reference - now using home page classes */
