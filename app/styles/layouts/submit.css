@@ -1,2 +1,379 @@
-/* Submit page layout - Phase 2 */
-/* Placeholder for future submit page styling */
+/* Submit page layout */
+
+.submit-page-layout {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 3;
+}
+
+.submit-form-container {
+  max-width: 850px;
+  width: 100%;
+  text-align: left;
+  padding: 30px var(--spacing-md) 60px;
+  padding-right: calc(var(--spacing-md) + 50px);
+  margin-top: 100px;
+  margin-bottom: 100px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Custom scrollbar — pill thumb, no arrows, no track background */
+.submit-form-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.submit-form-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.submit-form-container::-webkit-scrollbar-thumb {
+  background: rgba(105, 106, 111, 0.35);
+  border-radius: 100px;
+}
+
+.submit-form-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(105, 106, 111, 0.55);
+}
+
+.submit-form-container::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+}
+
+.submit-form-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(105, 106, 111, 0.35) transparent;
+}
+
+.submit-form-container .decorator-line {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.submit-form-container .section-notice {
+  margin-bottom: 20px;
+}
+
+.submit-form-container .main-heading {
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Form sections */
+.submit-section {
+  margin-bottom: 60px;
+}
+
+.submit-section-title {
+  font-family: var(--font-inter);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-section-notice);
+  color: var(--color-text);
+  text-transform: uppercase;
+  margin-bottom: var(--spacing-md);
+}
+
+/* Form groups */
+.submit-form-group {
+  margin-bottom: var(--spacing-lg);
+  text-align: left;
+}
+
+.submit-form-group label {
+  display: block;
+  font-family: var(--font-inter);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-section-notice);
+  color: var(--color-text);
+  margin-bottom: var(--spacing-sm);
+  text-transform: uppercase;
+}
+
+.submit-form-group input,
+.submit-form-group textarea,
+.submit-form-group select {
+  width: 100%;
+  font-family: var(--font-inter);
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-table-content);
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(105, 106, 111, 0.25);
+  border-radius: 4px;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 400ms ease-in-out;
+  text-align: left;
+  accent-color: var(--color-text);
+}
+
+.submit-form-group select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23696A6F'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.submit-form-group select option {
+  background: #e8e8e8;
+  color: var(--color-text);
+}
+
+.submit-form-group select:focus option:checked {
+  background: var(--color-text);
+  color: white;
+}
+
+.submit-radio-group input[type="radio"] {
+  accent-color: var(--color-text);
+}
+
+.submit-form-group input:focus,
+.submit-form-group textarea:focus,
+.submit-form-group select:focus {
+  border-color: var(--color-text);
+}
+
+.submit-form-group input.input-error,
+.submit-form-group textarea.input-error {
+  border-color: #c0392b;
+}
+
+.submit-form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.submit-form-group small {
+  display: block;
+  font-family: var(--font-inter);
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-meta);
+  color: var(--color-text);
+  opacity: 0.5;
+  margin-top: var(--spacing-xs);
+}
+
+.submit-form-group .field-error {
+  font-family: var(--font-inter);
+  font-size: var(--fs-meta);
+  color: #c0392b;
+  margin-top: var(--spacing-xs);
+}
+
+/* Radio group */
+.submit-radio-group {
+  display: flex;
+  gap: var(--spacing-lg);
+  justify-content: flex-start;
+}
+
+.submit-radio-group label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-body);
+  text-transform: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Team member row */
+.submit-team-row {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.submit-team-row input {
+  flex: 1;
+  max-width: 280px;
+}
+
+/* Buttons */
+.submit-add-btn {
+  font-family: var(--font-inter);
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-meta);
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  opacity: 0.6;
+  transition: opacity 400ms ease-in-out;
+}
+
+.submit-add-btn:hover {
+  opacity: 1;
+}
+
+.submit-remove-btn {
+  font-family: var(--font-inter);
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-meta);
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  opacity: 0.4;
+  transition: opacity 400ms ease-in-out;
+}
+
+.submit-remove-btn:hover {
+  opacity: 1;
+}
+
+.submit-btn {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: var(--font-inter);
+  font-weight: var(--fw-light);
+  font-size: 11px;
+  color: var(--color-text);
+  padding: 10px 40px;
+  border-radius: 33px;
+  border: 1px solid transparent;
+  background: transparent;
+  background-image: linear-gradient(to bottom right, #E7E7E7, rgba(225, 225, 225, 0));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background-color 400ms ease-in-out, color 400ms ease-in-out;
+  box-shadow: 0 4px 6.3px rgba(0, 0, 0, 0.1);
+}
+
+.submit-btn:hover {
+  background-color: #696A6F;
+  background-image: none;
+  color: white;
+}
+
+.submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Result alert */
+.submit-alert {
+  font-family: var(--font-inter);
+  font-size: var(--fs-table-content);
+  color: var(--color-text);
+  margin-top: var(--spacing-md);
+  padding: 10px 0;
+}
+
+.submit-alert.success {
+  opacity: 0.8;
+}
+
+.submit-alert.error {
+  color: #c0392b;
+}
+
+/* Custom dropdown */
+.submit-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.submit-dropdown-trigger {
+  width: 100%;
+  font-family: var(--font-inter);
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-table-content);
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(105, 106, 111, 0.25);
+  border-radius: 4px;
+  padding: 10px 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 400ms ease-in-out;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.submit-dropdown-trigger:hover,
+.submit-dropdown-trigger.open {
+  border-color: var(--color-text);
+}
+
+.submit-dropdown-trigger::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--color-text);
+  margin-left: 10px;
+}
+
+.submit-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: rgba(240, 240, 240, 0.97);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(105, 106, 111, 0.25);
+  border-radius: 4px;
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(105, 106, 111, 0.35) transparent;
+}
+
+.submit-dropdown-menu::-webkit-scrollbar {
+  width: 5px;
+}
+
+.submit-dropdown-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.submit-dropdown-menu::-webkit-scrollbar-thumb {
+  background: rgba(105, 106, 111, 0.35);
+  border-radius: 100px;
+}
+
+.submit-dropdown-menu::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+}
+
+.submit-dropdown-option {
+  font-family: var(--font-inter);
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-table-content);
+  color: var(--color-text);
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background 200ms ease-in-out;
+}
+
+.submit-dropdown-option:hover {
+  background: rgba(105, 106, 111, 0.15);
+}
+
+.submit-dropdown-option.selected {
+  font-weight: var(--fw-bold);
+}

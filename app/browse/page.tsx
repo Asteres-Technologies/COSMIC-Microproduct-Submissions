@@ -54,6 +54,13 @@ export default function BrowsePage() {
   const isDetailScrolling = useRef(false);
   const detailTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
+  // Join panel state
+  const [joiningOpp, setJoiningOpp] = useState<Opportunity | null>(null);
+  const [joinAnimState, setJoinAnimState] = useState<AnimationState>('idle');
+  const [joinFormData, setJoinFormData] = useState({ name: '', email: '' });
+  const [joinSubmitting, setJoinSubmitting] = useState(false);
+  const [joinResult, setJoinResult] = useState<{ success: boolean; message: string } | null>(null);
+
   // Restore filter + scroll from sessionStorage
   useEffect(() => {
     try {
@@ -261,6 +268,7 @@ export default function BrowsePage() {
       setScrollDotsAnimState('hiding');
       setRowAnimStates(prev => prev.map(() => 'hiding'));
       setDetailAnimState('hiding');
+      setJoinAnimState('hiding');
       if (filtersVisible) {
         setPillAnimStates(prev => prev.map(() => 'hiding' as AnimationState));
       }
@@ -979,6 +987,123 @@ export default function BrowsePage() {
     }, ANIMATION_DURATION / 4);
   };
 
+  // Join panel — smoke hide table, show join form
+  const handleJoin = (opp: Opportunity) => {
+    if (joiningOpp || viewingOpp) return;
+
+    if (smokeEffectRef.current) {
+      let first = true;
+      document.querySelectorAll('.table-row .title').forEach(el => {
+        const htmlEl = el as HTMLElement;
+        if (first) { smokeEffectRef.current!.initFromElement(htmlEl); first = false; }
+        else smokeEffectRef.current!.addFromElement(htmlEl);
+      });
+      smokeEffectRef.current.startHide();
+    }
+
+    setHeadingAnimState('hiding');
+    setFilterBarAnimState('hiding');
+    setScrollDotsAnimState('hiding');
+    setRowAnimStates(prev => prev.map(() => 'hiding'));
+
+    setTimeout(() => {
+      setTableVisible(false);
+      setJoiningOpp(opp);
+      setJoinFormData({ name: '', email: '' });
+      setJoinSubmitting(false);
+      setJoinResult(null);
+      setJoinAnimState('showing');
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const fields = document.querySelectorAll('.join-panel .detail-field') as NodeListOf<HTMLElement>;
+          if (fields.length > 0 && smokeEffectRef.current) {
+            smokeEffectRef.current.initFromElement(fields[0]);
+            for (let i = 1; i < fields.length; i++) smokeEffectRef.current.addFromElement(fields[i]);
+            smokeEffectRef.current.startShow();
+          }
+        });
+      });
+
+      setTimeout(() => setJoinAnimState('idle'), ANIMATION_DURATION);
+    }, ANIMATION_DURATION / 4);
+  };
+
+  const handleCloseJoin = () => {
+    if (!joiningOpp) return;
+
+    if (smokeEffectRef.current) {
+      const fields = document.querySelectorAll('.join-panel .detail-field') as NodeListOf<HTMLElement>;
+      if (fields.length > 0) {
+        smokeEffectRef.current.initFromElement(fields[0]);
+        for (let i = 1; i < fields.length; i++) smokeEffectRef.current.addFromElement(fields[i]);
+        smokeEffectRef.current.startHide();
+      }
+    }
+    setJoinAnimState('hiding');
+
+    setTimeout(() => {
+      setJoiningOpp(null);
+      setJoinAnimState('idle');
+      setTableVisible(true);
+
+      setHeadingAnimState('showing');
+      setFilterBarAnimState('showing');
+      setScrollDotsAnimState('showing');
+      const visibleCount = Math.min(getSortedOpportunities().length, MAX_VISIBLE_ROWS);
+      setRowsRevealed(new Set(Array.from({ length: visibleCount }, (_, i) => i)));
+      setRowAnimStates(new Array(visibleCount).fill('showing'));
+
+      requestAnimationFrame(() => {
+        const headingEl = document.querySelector('.browse-heading') as HTMLElement;
+        if (headingEl && smokeEffectRef.current) {
+          smokeEffectRef.current.initFromElement(headingEl);
+          smokeEffectRef.current.startShow();
+        }
+        let first = true;
+        document.querySelectorAll('.table-row .title').forEach(el => {
+          const htmlEl = el as HTMLElement;
+          if (first && smokeEffectRef.current) { smokeEffectRef.current.initFromElement(htmlEl); first = false; }
+          else if (smokeEffectRef.current) smokeEffectRef.current.addFromElement(htmlEl);
+        });
+        if (smokeEffectRef.current) smokeEffectRef.current.startShow();
+      });
+
+      setTimeout(() => {
+        setHeadingAnimState('idle');
+        setFilterBarAnimState('idle');
+        setScrollDotsAnimState('idle');
+        setRowAnimStates(prev => prev.map(() => 'idle'));
+      }, ANIMATION_DURATION);
+    }, ANIMATION_DURATION / 4);
+  };
+
+  const handleJoinSubmit = async () => {
+    if (!joiningOpp || joinSubmitting) return;
+    setJoinSubmitting(true);
+    setJoinResult(null);
+    try {
+      const res = await fetch('/api/storage/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename: joiningOpp.name, name: joinFormData.name, email: joinFormData.email })
+      });
+      let data = null;
+      try { data = await res.json(); } catch { data = null; }
+      if (data && data.success) {
+        setJoined(prev => ({ ...prev, [joiningOpp.name]: true }));
+        setJoinResult({ success: true, message: 'Successfully joined!' });
+      } else {
+        const msg = data?.error ? (typeof data.error === 'string' ? data.error : JSON.stringify(data.error)) : 'Failed to join';
+        setJoinResult({ success: false, message: msg });
+      }
+    } catch (err) {
+      setJoinResult({ success: false, message: (err as Error).message });
+    } finally {
+      setJoinSubmitting(false);
+    }
+  };
+
   const renderTeam = (rawOrParsed: any) => {
     if (!rawOrParsed) return null;
     const tm = rawOrParsed.team_members;
@@ -1195,8 +1320,8 @@ export default function BrowsePage() {
                   <div className={`status ${status === 'approved' ? 'approved' : 'pending'}`}>{status.toUpperCase()}</div>
                   <div className="actions">
                     <button className="btn-view" onClick={() => handleView(opp)}>VIEW</button>
-                    {!joined[opp.name] && !joinForms[opp.name] && (
-                      <button className="btn-join" onClick={() => startJoin(opp.name)}>JOIN</button>
+                    {!joined[opp.name] && (
+                      <button className="btn-join" onClick={() => handleJoin(opp)}>JOIN</button>
                     )}
                     {joined[opp.name] && (
                       <button className="btn-join" disabled>JOINED</button>
@@ -1259,6 +1384,42 @@ export default function BrowsePage() {
                   : getAnimationStyle(detailAnimState)
               }>
                 {currentDetailContent?.content}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Join panel — form view like detail panel */}
+        {joiningOpp && (() => {
+          const p = joiningOpp.parsed || {};
+          const title = p.title ?? joiningOpp.name;
+          return (
+            <div className="detail-panel join-panel">
+              <button className="detail-back" onClick={handleCloseJoin}>← BACK</button>
+              <div className="detail-section-content" style={getAnimationStyle(joinAnimState)}>
+                <p className="detail-field section-notice">Join Team</p>
+                <h1 className="detail-field main-heading">{title}</h1>
+                <div className="decorator-line"></div>
+                <p className="detail-field body-paragraph" style={{ marginBottom: '40px', opacity: 0.6 }}>Enter your details to join this microproduct.</p>
+
+                <div className="detail-field submit-form-group">
+                  <label htmlFor="join-name">Name *</label>
+                  <input type="text" id="join-name" value={joinFormData.name} onChange={e => setJoinFormData(prev => ({ ...prev, name: e.target.value }))} required />
+                </div>
+
+                <div className="detail-field submit-form-group">
+                  <label htmlFor="join-email">Email *</label>
+                  <input type="email" id="join-email" value={joinFormData.email} onChange={e => setJoinFormData(prev => ({ ...prev, email: e.target.value }))} required />
+                </div>
+
+                <button className="detail-field submit-btn" onClick={handleJoinSubmit} disabled={joinSubmitting || !joinFormData.name.trim()}>
+                  {joinSubmitting ? 'Submitting...' : 'Submit Member'}
+                </button>
+                {joinResult && (
+                  <div className={`detail-field submit-alert ${joinResult.success ? 'success' : 'error'}`}>
+                    {joinResult.message}
+                  </div>
+                )}
               </div>
             </div>
           );

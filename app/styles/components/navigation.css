@@ -47,3 +47,9 @@
   left: 50%;
   transform: translateX(-50%);
 }
+
+/* Submit page: centered */
+.submit-page-layout .bottom-nav {
+  left: 50%;
+  transform: translateX(-50%);
+}

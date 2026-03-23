@@ -400,3 +400,19 @@
 /* Bullet line formatting handled via inline styles in JSX */
 
 /* Detail panel legacy styles kept for reference - now using home page classes */
+
+/* Join panel — left-align form content within the right-aligned detail panel */
+.join-panel .detail-section-content {
+  text-align: left;
+}
+
+.join-panel .decorator-line {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.join-panel .submit-btn {
+  display: block;
+  margin-left: 0;
+  margin-right: auto;
+}
