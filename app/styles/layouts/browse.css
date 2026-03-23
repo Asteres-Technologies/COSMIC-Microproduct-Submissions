@@ -401,9 +401,14 @@
 
 /* Detail panel legacy styles kept for reference - now using home page classes */
 
-/* Join panel — left-align form content within the right-aligned detail panel */
+/* Join panel — left-align form content, center the panel itself */
+.join-panel {
+  justify-content: center;
+}
+
 .join-panel .detail-section-content {
   text-align: left;
+  padding-right: 0;
 }
 
 .join-panel .decorator-line {
@@ -413,6 +418,6 @@
 
 .join-panel .submit-btn {
   display: block;
-  margin-left: 0;
+  margin-left: auto;
   margin-right: auto;
 }

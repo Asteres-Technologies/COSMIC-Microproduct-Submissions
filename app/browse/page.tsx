@@ -1093,6 +1093,15 @@ export default function BrowsePage() {
       if (data && data.success) {
         setJoined(prev => ({ ...prev, [joiningOpp.name]: true }));
         setJoinResult({ success: true, message: 'Successfully joined!' });
+        // Update local opportunities so the table reflects the new member count
+        setOpportunities(prev => prev.map(opp => {
+          if (opp.name !== joiningOpp.name) return opp;
+          const p = { ...opp.parsed };
+          const existing = Array.isArray(p.team_members) ? [...p.team_members] : [];
+          existing.push({ name: joinFormData.name, email: joinFormData.email });
+          p.team_members = existing;
+          return { ...opp, parsed: p };
+        }));
       } else {
         const msg = data?.error ? (typeof data.error === 'string' ? data.error : JSON.stringify(data.error)) : 'Failed to join';
         setJoinResult({ success: false, message: msg });
@@ -1305,7 +1314,7 @@ export default function BrowsePage() {
               const opp = sorted[dataIndex];
               const p = opp.parsed || {};
               const status = (opp.name?.split('__')?.[0] ?? '').toLowerCase();
-              const teamCount = p.team_members ? (Array.isArray(p.team_members) ? p.team_members.length : p.team_members.split(/\r?\n/).length) : 0;
+              const teamCount = (p.lead_name ? 1 : 0) + (p.team_members ? (Array.isArray(p.team_members) ? p.team_members.length : p.team_members.split(/\r?\n/).length) : 0);
               const rowAnim = rowAnimStates[index] || 'idle';
               const isRevealed = rowsRevealed.has(index);
               const rowStyle: React.CSSProperties = !isRevealed
